@@ -53,6 +53,8 @@ service.interceptors.response.use(
       sysNotification(Prompt.SYS_ERROR)
     }else if(error.code == 'ERR_NETWORK'){
       sysNotification(Prompt.NETWORK_ERROR)
+    }else if(error.code == 'ERR_BAD_RESPONSE'){
+      sysNotification(Prompt.SYS_ERROR)
     }
     Promise.reject(error)
   }
@@ -61,13 +63,13 @@ service.interceptors.response.use(
 const warnNotification = (desc => {
   Notification.warning({
     title: '系统提示',
-    content: desc,
+    message: desc,
   })
 })
 const sysNotification = (desc => {
   Notification.error({
     title: '系统提示',
-    content: desc,
+    message: desc,
   })
 })
 
