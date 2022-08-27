@@ -46,9 +46,9 @@ const router = new Router({
 router.beforeEach((to, from, next) => {
   console.log(localStorage.getItem('token'));
   if(localStorage.getItem('token')) {
-    if(to.path == '/' && to.path == '/login') {
+    if(to.path == '/' || to.path == '/login') {
       localStorage.clear()
-      next({path: '/'})
+      next({path: '/login'})
     }else {
       if(store.getters.routes.length == 0) {
         store.dispatch("GetRoutes", store.getters.uid).then(routeList => {

@@ -39,7 +39,7 @@
             <div class="tabs">
               <div class="tab-wrap">
                 <div class="tab-item" v-for="item in items" :key="item.name"
-                :class="{'islink': item.path == curRouter}">
+                :class="{'islink': item.name == curRouterName}">
                   <router-link class="tab-link" :to="item.path">
                     <span>{{item.label}}</span>
                   </router-link>
@@ -49,7 +49,9 @@
             </div>
           </div>
           <div>
-            <router-view />
+            <keep-alive>
+              <router-view></router-view>
+            </keep-alive>
           </div>
         </el-main>
       </el-container>
@@ -69,18 +71,27 @@ import Menu from './components/Menu.vue';
             path: "/index",
             name: "Index",
             label: "首页"
-          },
-          {
-            path: "/student",
-            name: "Student",
-            label: "学生"
           }
         ]
       }
     },
     computed: {
-      curRouter() {
-        return this.$route.path
+      curRouterName() {
+        return this.$route.name
+      }
+    },
+    watch: {
+      $route(val) {
+        const arr = [...this.$store.getters.routes]
+        const obj = arr.find(route => {
+          return route.name == val.name
+        })
+        const key = this.items.findIndex(item => {
+          return item.name == obj.name
+        })
+        if(key === -1) {
+          this.items.splice(this.items.length, 0, obj)
+        }
       }
     },
     mounted() {
@@ -138,6 +149,10 @@ import Menu from './components/Menu.vue';
   }
   
   .el-main{
+    overflow: hidden;
+    padding: 5px;
+    margin: 20px;
+
     .router-tools{
       padding: 10px 0 0;
       box-shadow: 0 0 2px 0 rgba($color: #000000, $alpha: .2);

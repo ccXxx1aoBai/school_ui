@@ -59,7 +59,7 @@ const formatRoutes = (routes) => {
 }
 
 const loadComponent = (component) => {
-  return component ? import(`@/${component}`) : ''
+  return component ? require(`@/${component}`).default : ''
 }
 
 export default tools
