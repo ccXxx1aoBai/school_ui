@@ -33,6 +33,7 @@ const tools = {
     GetRoutes: ({commit, dispatch}, data) => {
       return new Promise(resolve => {
         getRoutes(localStorage.getItem('uid')).then(res => {
+          console.log(res);
           const menus = formatRoutes(res.data.data)
           commit('SET_MENU', menus)
           const routes = []

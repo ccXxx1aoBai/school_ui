@@ -1,6 +1,8 @@
 import Vue from 'vue'
 import Router from 'vue-router'
 import store from '../store'
+import NProgress from 'nprogress'
+import 'nprogress/nprogress.css'
 
 Vue.use(Router)
 
@@ -44,6 +46,7 @@ const router = new Router({
 })
 
 router.beforeEach((to, from, next) => {
+  NProgress.start()
   console.log(localStorage.getItem('token'));
   if(localStorage.getItem('token')) {
     if(to.path == '/' || to.path == '/login') {
@@ -70,6 +73,10 @@ router.beforeEach((to, from, next) => {
   // if(to.path == '/login') {
   //   next()
   // }
+})
+
+router.afterEach((to, form) => {
+  NProgress.done()
 })
 
 export default router
