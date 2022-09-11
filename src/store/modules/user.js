@@ -19,8 +19,6 @@ const user = {
 
   actions: {
     GetUserInfo: ({commit}, {id: uid, username, avatar}) => {
-      console.log(uid);
-      console.log(username);
       commit('SET_UID', uid)
       commit('SET_USERNAME', username)
       commit('SET_AVATAR', avatar)

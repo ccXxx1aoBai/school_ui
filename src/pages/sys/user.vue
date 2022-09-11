@@ -9,24 +9,43 @@
         <div class="tools">
           <el-row>
             <el-col :span="4">
-              <el-input v-model="siftRoleName" clearable placeholder="角色名称"></el-input>
+              <el-select v-model="siftRole" clearable>
+                <el-option :label="role.name" :value="role.role" v-for="role in roleList" :key="role.id"></el-option>
+              </el-select>
             </el-col>
             <el-col :span="3" :offset="1">
-              <el-input v-model="siftUserName" placeholder="用户名称" clearable></el-input>
+              <el-input v-model="siftName" placeholder="用户名称" clearable ></el-input>
+            </el-col>
+            <el-col :span="5" :offset="1">
+              <el-button type="primary" icon="el-icon-search" @click="handleSelect">查询</el-button>
+              <el-button type="primary" icon="el-icon-printer">导出</el-button>
             </el-col>
           </el-row>
         </div>
         <div class="table">
-          <el-table border stripe height="600" :data="roleList" size="mini">
+          <el-table border stripe height="600" :data="tableData" size="mini" v-loading="tableLoading"
+          element-loading-text="拼命加载中" element-loading-spinner="el-icon-loading"
+          element-loading-background="rgba(0, 0, 0, 0.8)">
             <el-table-column label="ID" prop="id" align="center"></el-table-column>
             <el-table-column label="用户名称" prop="username" align="center"></el-table-column>
-            <el-table-column label="手机号码" prop="phone" align="center"></el-table-column>
-            <el-table-column label="邮箱" prop="email" align="center"></el-table-column>
-            <el-table-column label="权限" prop="role.name" align="center"></el-table-column>
+            <el-table-column label="账号状态" prop="enable" align="center">
+              <template slot-scope="scope">
+                <el-tag size="mini" :type="scope.row.lock ? 'info' : 'primary'">{{scope.row.lock ? '冻结' : '正常'}}</el-tag>
+              </template>
+            </el-table-column>
+            <el-table-column label="角色名称" prop="name" align="center">
+              <template slot-scope="scope">
+                <el-select v-if="edit" v-model="roleName" clearable>
+                  <el-option :label="role.name" :value="role.role" v-for="role in roleList" :key="role.id"></el-option>
+                </el-select>
+                <span v-else>{{scope.row.name}}</span>
+              </template>
+            </el-table-column>
             <el-table-column label="操作" align="center" width="300">
               <template slot-scope="scope">
                 <div class="customBtn">
-                  <el-button type="text" icon="el-icon-edit">编辑</el-button>
+                  <el-button type="text" icon="el-icon-edit"
+                  @click="handleChangeFinish(scope.row)">{{edit ? '完成' : '编辑'}}</el-button>
                   <el-popconfirm title="是否冻结此用户？" @confirm="handleLock(scope.row)">
                     <el-button style="color: #E39A09" type="text" slot="reference"
                     :icon="scope.row.lock ? 'el-icon-unlock' : 'el-icon-lock'">
@@ -49,8 +68,7 @@
           :current-page="page"
           :page-size.sync="size"
           :page-sizes="[10, 20, 30, 50, 100]"
-          @size-change="handleSizeChange"
-          @current-page="handlePageChange"
+          @current-change="handlePageChange"
           layout="total, sizes, prev, pager, next, jumper" />
         </div>
       </div>
@@ -60,26 +78,21 @@
 
 <script>
 import {getDepartmentList} from '@/api/department'
+import {getUserList} from '@/api/user'
+import {getRoleList} from '@/api/role'
   export default {
     name: '',
     data() {
       return {
-        siftRoleName: '',
-        siftUserName: '',
+        siftRole: '',
+        siftName: '',
+        roleList: [],
         tree: [],
         selectTree: [],
-        roleList: [
-          {
-            id: '1',
-            uid: '123',
-            username: '张三',
-            phone: '123',
-            email: '123',
-            role: {
-              name: 'admin'
-            }
-          }
-        ],
+        tableLoading: false,
+        tableData: [],
+        roleName: '',
+        edit: false,
         total: 0,
         page: 1,
         size: 10
@@ -93,20 +106,57 @@ import {getDepartmentList} from '@/api/department'
     },
     watch: {
       pagination(val) {
-        this.getRoleList(true, val.page, val.size)
+        this.getList(true, val.page, val.size, [])
       },
     },
     created() {
       getDepartmentList().then(res => {
         this.tree = res.data.data
       })
+      this.getList(true, this.page, this.size, [])
+      getRoleList().then(res => {
+        const {data} = res.data
+        this.roleList = data
+      })
     },
     methods: {
-      getRoleList(load, page, size) {
-        console.log(page, size);
+      getList(load, page, size, classIds) {
+        this.tableLoading = load
+        getUserList({role: this.siftRole, name: this.siftName, current: page, size, classIds}).then(res => {
+          console.log(res);
+          setTimeout(() => {
+            const {total, list} = res.data.data
+            this.total = total
+            this.tableData = list
+            this.tableLoading = false
+          }, 1000);
+        }).catch(err => {
+          this.tableLoading = false
+        })
+      },
+      handleSelect() {
+        this.getList(true, this.page, this.size, [])
       },
       handleTreeClick(tree) {
-        console.log(tree, self, children);
+        console.log(tree);
+        const arr = []
+        if(tree.children.length > 0) {
+          tree.children.forEach(item => {
+            arr.push(item.id)
+          })
+        }else {
+          arr.push(tree.id)
+        }
+        this.getList(true, this.page, this.size, arr)
+      },
+      handleChangeFinish(row) {
+        if(this.edit) {
+          this.edit = false
+          // 修改完成
+        }else {
+          this.edit = true
+          this.roleName = row.name
+        }
       },
       handleLock(row) {
 
@@ -126,10 +176,8 @@ import {getDepartmentList} from '@/api/department'
 
 <style lang="scss" scoped>
 .wrap{
-  display: flex;
-  margin: 20px 0;
   .tree{
-    width: 450px;
+    width: 350px;
     height: 100%;
     margin-top: 10px;
     overflow-y: auto;
@@ -141,11 +189,7 @@ import {getDepartmentList} from '@/api/department'
   }
 
   .content{
-    width: 100%;
-
-    .tools{
-      margin: 10px 0;
-    }
+    
     .customBtn{
       display: flex;
       & > * {

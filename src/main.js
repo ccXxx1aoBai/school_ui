@@ -9,7 +9,7 @@ Vue.config.productionTip = false
 
 Vue.prototype.$store = store
 
-Vue.use(ElementUI);
+Vue.use(ElementUI, {size: 'small'});
 
 new Vue({
   render: h => h(App),

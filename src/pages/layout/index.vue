@@ -53,11 +53,7 @@
             </div>
           </div>
           <div class="box">
-            <div style="background-color: #fff;margin: 10px;padding: 10px;">
-              <keep-alive>
-                <router-view></router-view>
-              </keep-alive>
-            </div>
+            <router-view></router-view>
           </div>
         </el-main>
       </el-container>
@@ -153,6 +149,7 @@ import Menu from './components/Menu.vue';
 
     .header{
       display: flex;
+      background-color: #ffffff;
       .router-tools{
         width: 100%;
 
@@ -221,10 +218,18 @@ import Menu from './components/Menu.vue';
       
     }
     .box{
-      width: 100%;
-      background: #c5c5c5;
-      height: 100%;
+      position: relative;
+      width: calc(100% - 20px);
+      height: calc(100vh - 100px);
+      background: #ffffff;
+      margin: 10px;
       overflow: hidden;
+
+      ::v-deep .el-pagination{
+        position: absolute;
+        bottom: 30px;
+        right: 20px;
+      }
     }
   }
 }

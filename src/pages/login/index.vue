@@ -15,7 +15,7 @@
             <div style="display: flex;">
               <el-input placeholder="验证码" @keyup.enter.native="handleSubmit" style="width: 150px;" clearable v-model="form.code"
               prefix-icon="el-icon-key" />
-              <img :src="src" width="150" height="36" @click="getCode">
+              <img :src="src" width="150" height="32" @click="getCode">
             </div>
           </el-form-item>
           <el-form-item>

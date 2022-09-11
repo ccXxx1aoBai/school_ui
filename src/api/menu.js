@@ -9,3 +9,12 @@ export const getRoutes = (data) => {
     params
   })
 }
+
+export const getMenuList = (data) => {
+  const params = new URLSearchParams()
+  return request({
+    url: '/menu',
+    method: 'get',
+    params
+  })
+}

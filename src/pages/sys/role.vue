@@ -1,44 +1,29 @@
 <template>
   <div>
     <div class="wrap">
-      <!-- <div class="tree">
-        <el-tree :data="tree" node-key="id" accordion 
-        :expand-on-click-node="false" @node-click="handleTreeClick" />
-      </div> -->
       <div class="content">
         <div class="tools">
           <el-row>
             <el-col :span="4">
               <el-input v-model="siftRoleName" clearable placeholder="角色名称"></el-input>
             </el-col>
-            <el-col :span="3" :offset="1">
-              <el-input v-model="siftUserName" placeholder="用户名称" clearable></el-input>
+            <el-col :span="2" :offset="1">
+              <el-button type="primary">查询</el-button>
+              <el-button type="success">新增</el-button>
             </el-col>
           </el-row>
         </div>
         <div class="table">
           <el-table border stripe height="600" :data="roleList" size="mini">
-            <el-table-column label="ID" prop="id" align="center"></el-table-column>
-            <el-table-column label="用户ID" prop="uid" align="center"></el-table-column>
-            <el-table-column label="用户名称" prop="username" align="center"></el-table-column>
-            <el-table-column label="拥有权限" prop="authorization" align="center"></el-table-column>
-            <el-table-column label="账号状态" prop="lock" align="center">
-              <template slot-scope="scope">
-                <el-tag size="mini" :type="scope.row.lock ? 'info' : 'primary'">{{scope.row.lock ? '冻结' : '正常'}}</el-tag>
-              </template>
-            </el-table-column>
+            <el-table-column label="角色ID" prop="id" align="center"></el-table-column>
+            <el-table-column label="角色名称" prop="role" align="center"></el-table-column>
+            <el-table-column label="角色别名" prop="name" align="center"></el-table-column>
+            <el-table-column label="人数" prop="count" align="center"></el-table-column>
             <el-table-column label="操作" align="center" width="300">
               <template slot-scope="scope">
                 <div class="customBtn">
-                  <el-button type="text" icon="el-icon-edit">编辑</el-button>
-                  <el-button type="text" icon="el-icon-refresh">重置密码</el-button>
-                  <el-popconfirm title="是否冻结此用户？" @confirm="handleLock(scope.row)">
-                    <el-button style="color: #E39A09" type="text" slot="reference"
-                    :icon="scope.row.lock ? 'el-icon-unlock' : 'el-icon-lock'">
-                      {{scope.row.lock ? '解冻' : '冻结'}}
-                    </el-button>
-                  </el-popconfirm>
-                  <el-popconfirm title="是否删除此用户？" @confirm="handleDel(scope.row)">
+                  <el-button type="text" icon="el-icon-edit" @click="handleEdit(scope.row)">编辑</el-button>
+                  <el-popconfirm title="是否删除该角色？" @confirm="handleDel(scope.row)">
                     <el-button style="color: #DA281F" type="text" icon="el-icon-delete" slot="reference">删除</el-button>
                   </el-popconfirm>
                 </div>
@@ -57,6 +42,22 @@
         </div>
       </div>
     </div>
+
+    <el-dialog :visible.sync="dialog" title="角色权限分配">
+      <div class="form">
+        <el-form :model="role" label-position="left" label-width="100px">
+          <el-form-item label="角色名称" prop="role">
+            <el-input v-model="role.role" clearable></el-input>
+          </el-form-item>
+          <el-form-item label="角色别名" prop="name">
+            <el-input v-model="role.name" clearable></el-input>
+          </el-form-item>
+          <el-form-item label="菜单权限" prop="menu">
+            <el-tree :data="menuTree" :expand-on-click-node="false" show-checkbox></el-tree>
+          </el-form-item>
+        </el-form>
+      </div>
+    </el-dialog>
   </div>
 </template>
 
@@ -67,21 +68,52 @@ import {getDepartmentList} from '@/api/department'
     data() {
       return {
         siftRoleName: '',
-        siftUserName: '',
-        tree: [],
-        selectTree: [],
+        menuTree: [
+          {
+            id: 1,
+            label: '首页',
+          },{
+            id: 2,
+            label: '权限管理',
+            children: [
+              {
+                id: 3,
+                label: '用户管理'
+              },{
+                id: 4,
+                label: '角色管理'
+              },{
+                id: 5,
+                label: '菜单管理'
+              }
+            ]
+          },{
+            id: 6,
+            label: '系统管理',
+            children: [
+              {
+                id: 7,
+                label: '系统日志'
+              }
+            ]
+          }
+        ],
         roleList: [
           {
             id: '1',
-            uid: '123',
-            username: '张三',
-            authorization: '学生',
-            lock: true
+            role: 'student',
+            name: '学生',
+            count: 1342
           }
         ],
         total: 0,
         page: 1,
-        size: 10
+        size: 10,
+        dialog: false,
+        role: {
+          role: '',
+          name: '',
+        }
       }
     },
     computed: {
@@ -107,8 +139,9 @@ import {getDepartmentList} from '@/api/department'
       handleTreeClick(tree) {
         console.log(tree, self, children);
       },
-      handleLock(row) {
-
+      handleEdit(row) {
+        console.log(row);
+        this.dialog = !this.dialog
       },
       handleDel(row) {
 
@@ -125,32 +158,25 @@ import {getDepartmentList} from '@/api/department'
 
 <style lang="scss" scoped>
 .wrap{
-  display: flex;
-  margin: 20px 0;
-  .tree{
-    width: 450px;
-    height: 100%;
-    margin-top: 10px;
-    overflow-y: auto;
-
-    ::v-deep .el-tree{
-      width: 200px;
-      margin: auto;
-    }
-  }
-
   .content{
-    width: 100%;
+    width: 90%;
+    margin: auto;
+    padding: 10px 0;
 
     .tools{
       margin: 10px 0;
     }
     .customBtn{
-      display: flex;
+
       & > * {
-        width: 100%;
+        margin: auto 10px;
       }
     }
+  }
+}
+.el-dialog {
+  .el-form{
+    width: 300px;
   }
 }
 </style>
