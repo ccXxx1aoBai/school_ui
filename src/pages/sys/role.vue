@@ -5,19 +5,21 @@
         <div class="tools">
           <el-row>
             <el-col :span="4">
-              <el-input v-model="siftRoleName" clearable placeholder="角色名称"></el-input>
+              <el-input v-model="siftRoleName" clearable placeholder="角色名称" maxlength="20"></el-input>
             </el-col>
             <el-col :span="2" :offset="1">
-              <el-button type="primary">查询</el-button>
-              <el-button type="success">新增</el-button>
+              <el-button type="primary" @click="getList(true)">查询</el-button>
+              <el-button type="success" @click="dialog = !dialog">新增</el-button>
             </el-col>
           </el-row>
         </div>
         <div class="table">
-          <el-table border stripe height="600" :data="roleList" size="mini">
+          <el-table border stripe height="600" :data="roleList" size="mini" v-loading="tableLoading"
+          element-loading-text="加载中" element-loading-spinner="el-icon-loading">
             <el-table-column label="角色ID" prop="id" align="center"></el-table-column>
-            <el-table-column label="角色名称" prop="role" align="center"></el-table-column>
-            <el-table-column label="角色别名" prop="name" align="center"></el-table-column>
+            <el-table-column label="权限标识" prop="role" align="center"></el-table-column>
+            <el-table-column label="角色名称" prop="name" align="center"></el-table-column>
+            <el-table-column label="菜单权限" prop="menus" width="200" show-overflow-tooltip align="center"></el-table-column>
             <el-table-column label="人数" prop="count" align="center"></el-table-column>
             <el-table-column label="操作" align="center" width="300">
               <template slot-scope="scope">
@@ -30,127 +32,184 @@
               </template>
             </el-table-column>
           </el-table>
-          <el-pagination 
-          style="margin-top: 20px"
-          :total="total"
-          :current-page="page"
-          :page-size.sync="size"
-          :page-sizes="[10, 20, 30, 50, 100]"
-          @size-change="handleSizeChange"
-          @current-page="handlePageChange"
-          layout="total, sizes, prev, pager, next, jumper" />
         </div>
       </div>
     </div>
 
-    <el-dialog :visible.sync="dialog" title="角色权限分配">
+    <el-dialog :visible.sync="dialog" title="角色管理" @open="handleBeforeOpen" @close="handleBeforeClose"
+    width="50%">
       <div class="form">
-        <el-form :model="role" label-position="left" label-width="100px">
-          <el-form-item label="角色名称" prop="role">
-            <el-input v-model="role.role" clearable></el-input>
+        <el-form :model="roleForm" ref="roleForm" :rules="roleRules" label-position="left" label-width="100px">
+          <el-form-item v-show="false">
+            <el-input v-model="roleForm.id"></el-input>
           </el-form-item>
-          <el-form-item label="角色别名" prop="name">
-            <el-input v-model="role.name" clearable></el-input>
+          <el-form-item label="权限标识" prop="role">
+            <el-row>
+              <el-col :span="22">
+                <el-input v-model="roleForm.role" clearable placeholder="权限标识" maxlength="20"></el-input>
+              </el-col>
+              <el-col :span="1" :offset="1">
+                <el-tooltip content="多个身份以“,”分隔">
+                  <i class="el-icon-info"></i>
+                </el-tooltip>
+              </el-col>
+            </el-row>
           </el-form-item>
-          <el-form-item label="菜单权限" prop="menu">
-            <el-tree :data="menuTree" :expand-on-click-node="false" show-checkbox></el-tree>
+          <el-form-item label="角色名称" prop="name">
+            <el-input v-model="roleForm.name" clearable placeholder="角色名称" maxlength="20"></el-input>
+          </el-form-item>
+          <el-form-item label="菜单权限" prop="menus">
+            <el-tree 
+            node-key="id"
+            ref="tree"
+            show-checkbox
+            :data="menuTree"
+            :expand-on-click-node="false" 
+            :render-after-expand="false"
+            @check-change="handleTreeClick"></el-tree>
           </el-form-item>
         </el-form>
+      </div>
+      <div class="footer" slot="footer">
+        <el-button block type="primary" @click="handleSubmit">提交</el-button>
       </div>
     </el-dialog>
   </div>
 </template>
 
 <script>
-import {getDepartmentList} from '@/api/department'
+import {getAllMenu} from '@/api/menu'
+import { getRoleList, updateRoleInfo, addRole, delRole } from '@/api/role'
   export default {
     name: '',
     data() {
       return {
         siftRoleName: '',
-        menuTree: [
-          {
-            id: 1,
-            label: '首页',
-          },{
-            id: 2,
-            label: '权限管理',
-            children: [
-              {
-                id: 3,
-                label: '用户管理'
-              },{
-                id: 4,
-                label: '角色管理'
-              },{
-                id: 5,
-                label: '菜单管理'
-              }
-            ]
-          },{
-            id: 6,
-            label: '系统管理',
-            children: [
-              {
-                id: 7,
-                label: '系统日志'
-              }
-            ]
-          }
-        ],
-        roleList: [
-          {
-            id: '1',
-            role: 'student',
-            name: '学生',
-            count: 1342
-          }
-        ],
-        total: 0,
-        page: 1,
-        size: 10,
+        tableLoading: false,
+        roleList: [],
         dialog: false,
-        role: {
+        roleForm: {
+          id: '',
           role: '',
           name: '',
-        }
+          menus: '',
+          menuList: []
+        },
+        roleRules: {
+          role: [
+            { required: true, message: '请输入权限标识', trigger: ['change', 'blur'] }
+          ]
+        },
+        menuTree: [],
+        defaultExpanded: [],
+        defaultChecked: [],
       }
-    },
-    computed: {
-      pagination() {
-        const {page, size} = this
-        return {page, size}
-      }
-    },
-    watch: {
-      pagination(val) {
-        this.getRoleList(true, val.page, val.size)
-      },
     },
     created() {
-      getDepartmentList().then(res => {
-        this.tree = res.data.data
+      this.$fullLoading.load()
+      getAllMenu().then(res => {
+        this.menuTree = res.data.data
       })
+      this.getList(false)
     },
     methods: {
-      getRoleList(load, page, size) {
-        console.log(page, size);
-      },
-      handleTreeClick(tree) {
-        console.log(tree, self, children);
+      getList(load) {
+        this.tableLoading = load
+        getRoleList({name: this.siftRoleName}).then(res => {
+          this.roleList = res.data.data
+          this.tableLoading = false
+          this.$fullLoading.close()
+        }).catch(err => {
+          this.tableLoading = false
+          this.$fullLoading.close()
+        })
       },
       handleEdit(row) {
-        console.log(row);
         this.dialog = !this.dialog
+        this.$nextTick(() => {
+          Object.keys(row).forEach(key => {
+            this.$set(this.roleForm, key, row[key])
+          })
+        })
       },
       handleDel(row) {
-
+        delRole(row.id).then(res => {
+          console.log(res);
+          if(res && res.data.code === 200) {
+            this.getList(true)
+          }
+        })
       },
-      handleSizeChange(size) {
-        this.size = size
+      handleBeforeOpen() {
+        this.$nextTick(() => {
+          this.tempValue = []
+          if(typeof this.roleForm.menus == 'string') {
+            this.setDefaultKey(this.roleForm.menus.split(','), this.menuTree)
+          }
+          this.roleForm.menuList = []
+          const temp = [...new Set([...this.tempValue])]
+          this.$refs.tree.setCheckedKeys(temp, true)
+        })
       },
-      handlePageChange(page) {
-        this.page = page
+      handleBeforeClose() {
+        this.$refs.roleForm.resetFields()
+        this.$refs.tree.setCheckedKeys([], true)
+      },
+      handleTreeClick(tree, self, children) {
+        if(self) {  // 选中
+          this.roleForm.menuList.push(tree.id)
+        }else {
+          const index = this.roleForm.menuList.findIndex(el => {
+            return el == tree.id
+          })
+          this.roleForm.menuList.splice(index, 1)
+        }
+      },
+      handleSubmit() {
+        this.$refs.roleForm.validate(valid => {
+          if(valid) {
+            this.roleForm.role = this.roleForm.role.toUpperCase()
+            if(this.roleForm.id) {  // 修改
+              updateRoleInfo(this.roleForm).then(res => {
+                if(res && res.data.code === 200) {
+                  this.dialog = false
+                  this.getList(true)
+                }
+              })
+            }else {     // 添加
+              addRole(this.roleForm).then(res => {
+                if(res && res.data.code === 200) {
+                  this.getList(false)
+                  this.$refs.roleForm.resetFields()
+                  this.$refs.tree.setCheckedKeys([], true)
+                }
+              })
+            }
+          }
+        })
+      },
+      setDefaultKey(array, menus) {
+        for(let i = 0; i < array.length; i++) {
+          for(let j = 0; j < menus.length; j++) {
+            if(menus[j].children) {
+              if(menus[j].children.length > 0) {
+                this.setDefaultKey(array, menus[j].children)
+              }else {
+                if(menus[j].label == array[i]){
+                  this.tempValue.push(menus[j].id)
+                }else {
+                  continue
+                }
+              }
+            }else {
+              if(menus[j].label == array[i]){
+                this.tempValue.push(menus[j].id)
+              }else {
+                continue
+              }
+            }
+          }
+        }
       }
     }
   }
@@ -176,7 +235,7 @@ import {getDepartmentList} from '@/api/department'
 }
 .el-dialog {
   .el-form{
-    width: 300px;
+    width: 500px;
   }
 }
 </style>

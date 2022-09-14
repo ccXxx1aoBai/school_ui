@@ -1,14 +1,14 @@
 <template>
   <div>
     <div v-for="menu in menus" :key="menu.name">
-      <el-submenu :index="menu.name" v-if="menu.children && menu.children.length > 0">
+      <el-submenu :index="menu.name" v-if="menu.children && menu.children.length > 0" :disabled="menu.disabled">
         <template slot="title">
           <span>{{menu.label}}</span>
         </template>
         <ChildrenMenu :menus="menu.children" />
       </el-submenu>
 
-      <el-menu-item v-else :index="menu.path">{{menu.label}}</el-menu-item>
+      <el-menu-item v-else :index="menu.path" :disabled="menu.disabled">{{menu.label}}</el-menu-item>
     </div>
   </div>
 </template>

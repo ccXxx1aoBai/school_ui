@@ -29,13 +29,16 @@ service.interceptors.response.use(
   res => {
     const {code, msg} = res.data
     if(res.data.code === 200 || code === void 0) {
+      successNotification(msg)
       return res
     }
     warnNotification(msg)
   },
   error => {
     const {status} = error.response
-    if(status === 401) {
+    if(status === 400){
+      sysNotification('参数错误')
+    }else if(status === 401) {
       MessageBox('身份已过期，请重新登陆', '系统提示', {
         confirmButtonText: '确定',
         cancelButtonText: '取消',
@@ -60,16 +63,28 @@ service.interceptors.response.use(
   }
 )
 
+const successNotification = (desc => {
+  if(desc) {
+    Notification.success({
+      title: '系统提示',
+      message: desc,
+      showClose: false
+    })
+  }
+}) 
+
 const warnNotification = (desc => {
   Notification.warning({
     title: '系统提示',
     message: desc,
+    showClose: false
   })
 })
 const sysNotification = (desc => {
   Notification.error({
     title: '系统提示',
     message: desc,
+    showClose: false
   })
 })
 

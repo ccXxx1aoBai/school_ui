@@ -9,7 +9,7 @@
         <div class="tools">
           <el-row>
             <el-col :span="4">
-              <el-select v-model="siftRole" clearable>
+              <el-select v-model="siftRole" clearable placeholder="用户角色">
                 <el-option :label="role.name" :value="role.role" v-for="role in roleList" :key="role.id"></el-option>
               </el-select>
             </el-col>

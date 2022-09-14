@@ -288,7 +288,7 @@ const iconList = []
 const temp1 = []
 const temp2 = []
 for(let i = 0; i < iconLabel.length; i++) {
-  if(iconLabel[i].indexOf('-') == -1 && iconLabel[i].indexOf('loading') == -1) {
+  if(iconLabel[i].indexOf('loading') == -1) {
     temp1.push(iconName[i])
     temp2.push(iconLabel[i])
   }
@@ -297,10 +297,11 @@ iconName = []
 iconLabel = []
 iconName = temp1
 iconLabel = temp2
-let length = iconLabel.length % 5 ? (Math.floor(iconLabel.length / 5) + 1) : iconLabel.length / 5
+const col = 4
+let length = iconLabel.length % col ? (Math.floor(iconLabel.length / col) + 1) : iconLabel.length / col
 for(let i = 0; i < length; i++) {
   iconList.push([])
-  for(let j = i * 5; j < (i * 5 + 5); j++) {
+  for(let j = i * col; j < (i * col + col); j++) {
     iconList[i].push({icon: iconName[j], label: iconLabel[j]})
   }
 }
