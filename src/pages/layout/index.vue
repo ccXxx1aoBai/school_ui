@@ -18,14 +18,14 @@
                   <el-breadcrumb-item>学生</el-breadcrumb-item>
                 </el-breadcrumb>
               </div>
-              <div class="tabs">
+              <div class="tabs" v-if="items.length > 0">
                 <div class="tab-wrap">
-                  <div class="tab-item" v-for="item in items" :key="item.name"
+                  <div class="tab-item" v-for="(item, index) in items" :key="index"
                   :class="{'islink': item.name == curRouterName}">
                     <router-link class="tab-link" :to="item.path">
                       <span>{{item.label}}</span>
                     </router-link>
-                    <i class="el-icon-close"></i>
+                    <i class="el-icon-close" @click="closeTab(item)" v-if="index != 0"></i>
                   </div>
                 </div>
               </div>
@@ -68,13 +68,7 @@ import Menu from './components/Menu.vue';
     name: "",
     data() {
       return {
-        items: [
-          {
-            path: "/index",
-            name: "Index",
-            label: "首页"
-          }
-        ]
+        items: []
       }
     },
     computed: {
@@ -96,8 +90,31 @@ import Menu from './components/Menu.vue';
         }
       }
     },
+    created() {
+      this.items.splice(1, 0, this.$store.getters.routes[0])
+    },
     mounted() {
-      
+      // 解决刷新后当前路由无tab
+      const index = this.items.findIndex(item => {
+        return item.name == this.$route.name
+      })
+      if(index == -1) {
+        const route = this.$store.getters.routes.find(route => {
+          return route.name == this.$route.name
+        })
+        this.items.push(route)
+      }
+    },
+    methods: {
+      closeTab(obj) {
+        const index = this.items.findIndex(item => {
+          return item.name == obj.name
+        })
+        if(index != -1) {
+          this.items.splice(index, 1)
+          this.$router.push(this.items[index - 1].path)
+        }
+      }
     }
 }
 </script>
