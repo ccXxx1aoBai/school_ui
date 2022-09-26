@@ -37,9 +37,10 @@ p,h1,h2,h3,h4,h5,h6{
   padding: 10px 30px 20px;
 }
 .content{
-  width: 100%;
+  width: 96%;
+  margin: auto;
 }
 .tools{
-  margin: 10px 0;
+  margin: 20px 0;
 }
 </style>

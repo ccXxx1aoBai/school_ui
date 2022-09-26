@@ -155,9 +155,6 @@
           name: [
             { required: true, message: '请输入路由名称', trigger: ['change', 'blur'] }
           ],
-          path: [
-            {required: true, message: '请输入路由地址', trigger: ['change', 'blur'] }
-          ],
         },
         popShow: false,
         prefix: 'el-icon-search',

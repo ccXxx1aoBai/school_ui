@@ -60,7 +60,7 @@ router.beforeEach((to, from, next) => {
           })
           // hack方法 确保addRoutes已完成
           // 解决页面刷新路由丢失
-          next({...routeList[0], replace: true})
+          next({...to, replace: true})
         })
       }else {
         if(to.path == '/index') {
