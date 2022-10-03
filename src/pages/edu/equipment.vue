@@ -13,7 +13,7 @@
           </el-col>
           <el-col :span="4" :offset="1">
             <el-button type="primary">查询</el-button>
-            <el-button type="primary">新增设备</el-button>
+            <el-button type="primary" @click="dialog = !dialog">新增设备</el-button>
             <el-button type="primary">新增设备类型</el-button>
           </el-col>
         </el-row>
@@ -74,7 +74,7 @@
         <el-form-item label="设备类型" prop="type">
           <el-row>
             <el-col :span="6">
-              <el-select v-model="equipForm.type" clearable>
+              <el-select v-model="equipForm.type" clearable filterable allow-create>
                 <el-option v-for="type in equipTypeList" :key="type" :value="type"></el-option>
               </el-select>
             </el-col>
@@ -160,7 +160,7 @@
         total: 0,
         size: 10,
         current: 1,
-        dialog: true,
+        dialog: false,
         equipForm: {
           id: '',
           name: '',

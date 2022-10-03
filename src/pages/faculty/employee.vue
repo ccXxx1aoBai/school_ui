@@ -98,7 +98,7 @@
     data() {
       return {
         filterName: '',
-        tableLoading: true,
+        tableLoading: false,
         dataList: [{}],
         total: 0,
         size: 10,

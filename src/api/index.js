@@ -15,3 +15,10 @@ export const login = (data) => {
     data
   })
 }
+
+export const getPositionList = () => {
+  return request({
+    url: '/getPosition',
+    method: 'get'
+  })
+}
