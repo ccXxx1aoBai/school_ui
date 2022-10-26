@@ -22,3 +22,19 @@ export const getPositionList = () => {
     method: 'get'
   })
 }
+
+export const uploadImage = (file, paramsObj) => {
+  const {uid, type} = paramsObj
+  return request({
+    headers: {
+      'Content-Type': 'multipart/form-data'
+    },
+    url: '/file/upload/image',
+    method: 'post',
+    data: {
+      file,
+      uid,
+      type
+    }
+  })
+}

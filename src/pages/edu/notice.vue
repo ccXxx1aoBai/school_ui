@@ -42,7 +42,8 @@
       </div>
     </div>
 
-    <el-dialog :visible.sync="dialog" title="通知管理" fullscreen style="width: 50%;height: 90%;margin: auto;">
+    <el-dialog :visible.sync="dialog" title="通知管理" fullscreen style="width: 50%;height: 90%;margin: auto;"
+    @close="beforeClose">
       <el-form :model="noticeForm" :rules="rules" ref="noticeForm" label-position="left" label-width="80px"
       style="height: 160px;">
         <el-form-item label="通知标题" prop="title">
@@ -72,8 +73,7 @@
           <Editor style="width: 100%; height: 100%;"
             :defaultConfig="editConfig"
             v-model="noticeForm.content"
-            @onCreated="onCreated"
-            @customPaste="customPaste" />
+            @onCreated="onCreated" />
         </div>
       </div>
       <div slot="footer">
@@ -91,6 +91,9 @@
   import {
     getRoleOption
   } from '@/api/role'
+  import {
+    uploadImage
+  } from '@/api'
   export default {
     components: {Editor, Toolbar},
     data() {
@@ -99,11 +102,11 @@
         siftTime: [],
         items: [{}],
         loading: false,
-        dialog: true,
+        dialog: false,
         roleList: [],
         noticeForm: {
           title: '',
-          target: '',
+          target: [],
           content: ''
         },
         rules: {
@@ -122,6 +125,8 @@
           placeholder: "请输入内容",
           scroll: false
         },
+        imageList1: [],
+        imageList2: []
       }
     },
     created() {
@@ -132,6 +137,29 @@
     methods: {
       onCreated(editor) {
         this.editor = Object.seal(editor)
+        const config = editor.getConfig()
+        config.MENU_CONF['uploadImage'] = {
+          server: '/file/upload/image',
+          fieldName: localStorage.getItem('uid'),
+          maxFileSize: 500 * 1024,   // 500Kb
+          maxNumberOfFiles: 30,
+          allowedFileTypes: ['image/png'],  // 只接受PNG格式图片
+          customUpload: (file, fn) => {
+            const params = {
+              uid: localStorage.getItem('uid'),
+              type: 'notice'
+            }
+            uploadImage(file, params).then(res => {
+              const {ossUrl, downUrl, attachId} = res.data.data
+              fn(downUrl, attachId, downUrl)
+            })
+          }
+        }
+        config.MENU_CONF['insertImage'] = {
+          onInsertedImage: (img) => {
+            this.imageList1.push(img.src)
+          }
+        }
         editor.getAllMenuKeys().forEach((tool, i) => {
           if(tool.indexOf('fullScreen') == -1 && !tool.match(/^header[0-9]/)
             && tool.indexOf('codeSelectLang') == -1 && tool.indexOf('Video') == -1
@@ -140,9 +168,6 @@
             this.toolbarConfig.toolbarKeys.push(tool)
           }
         })
-      },
-      customPaste(editor, event, callback) {
-        
       },
       getNoticeList() {
 
@@ -154,10 +179,17 @@
         
       },
       handleEdit(row) {
-
+        this.$nextTick(() => {
+          Object.keys(row).forEach(key => {
+            this.$set(this.noticeForm, key, row[key])
+          })
+        })
       },
       handleDel(row) {
         
+      },
+      beforeClose() {
+        this.$refs.noticeForm.resetFields()
       }
     }
   }
