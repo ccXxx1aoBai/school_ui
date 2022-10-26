@@ -7,7 +7,7 @@
             <el-col :span="3">
               <el-input placeholder="通知标题" clearable v-model="siftName"></el-input>
             </el-col>
-            <el-col :span="6" :offset="1">
+            <el-col :span="5" :offset="1">
               <el-date-picker type="daterange" v-model="siftTime" range-separator="至" value-format="yyyy-MM-dd HH:mm:ss"
               start-placeholder="开始时间" end-placeholder="结束时间" :default-time="['00:00:00', '23:59:59']"></el-date-picker>
             </el-col>
@@ -53,10 +53,12 @@
             </el-col>
           </el-row>
         </el-form-item>
-        <el-form-item prop="role" label="通知对象">
+        <el-form-item prop="target" label="通知对象">
           <el-row>
             <el-col :span="16">
-               <el-input></el-input>
+              <el-select v-model="noticeForm.target" clearable multiple style="width: 100%;">
+                <el-option v-for="role in roleList" :key="role.name" :value="role.role" :label="role.name"></el-option>
+              </el-select>
             </el-col>
           </el-row>
         </el-form-item>
@@ -69,12 +71,13 @@
         <div class="edit-content">
           <Editor style="width: 100%; height: 100%;"
             :defaultConfig="editConfig"
+            v-model="noticeForm.content"
             @onCreated="onCreated"
             @customPaste="customPaste" />
         </div>
       </div>
       <div slot="footer">
-        <el-button type="primary">提交</el-button>
+        <el-button type="primary" @click="handleSubmit">提交</el-button>
       </div>
     </el-dialog>
   </div>
@@ -85,6 +88,9 @@
     Editor, 
     Toolbar,
   } from '@wangeditor/editor-for-vue'
+  import {
+    getRoleOption
+  } from '@/api/role'
   export default {
     components: {Editor, Toolbar},
     data() {
@@ -94,31 +100,55 @@
         items: [{}],
         loading: false,
         dialog: true,
+        roleList: [],
         noticeForm: {
-          title: ''
+          title: '',
+          target: '',
+          content: ''
         },
         rules: {
           title: [
             { required: true, message: '请输入通知标题', trigger: ['change', 'blur'] }
+          ],
+          target: [
+            { required: true, message: '请选择通知对象', trigger: ['change', 'blur'] }
           ]
         },
         editor: '',
-        toolbarConfig: {},
+        toolbarConfig: {
+          toolbarKeys: []
+        },
         editConfig: {
           placeholder: "请输入内容",
           scroll: false
         },
       }
     },
+    created() {
+      getRoleOption().then(res => {
+        this.roleList = res.data.data
+      })
+    },
     methods: {
       onCreated(editor) {
         this.editor = Object.seal(editor)
+        editor.getAllMenuKeys().forEach((tool, i) => {
+          if(tool.indexOf('fullScreen') == -1 && !tool.match(/^header[0-9]/)
+            && tool.indexOf('codeSelectLang') == -1 && tool.indexOf('Video') == -1
+            && tool.indexOf('imageWidth') == -1 && tool.indexOf('emotion') == -1
+            && tool.indexOf('todo') == -1 && tool.indexOf('codeBlock') == -1) {
+            this.toolbarConfig.toolbarKeys.push(tool)
+          }
+        })
       },
       customPaste(editor, event, callback) {
         
       },
       getNoticeList() {
 
+      },
+      handleSubmit() {
+        console.log(this.noticeForm);
       },
       handleView(row) {
         
@@ -142,7 +172,7 @@
 
   .edit-content{
     overflow-y: auto;
-    height: calc(90vh - 417px);
+    height: calc(90vh - 477px);
 
     &::-webkit-scrollbar {
       width: 10px;
