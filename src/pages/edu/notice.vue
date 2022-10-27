@@ -94,6 +94,9 @@
   import {
     uploadImage
   } from '@/api'
+  import {
+    addNotice
+  } from '@/api/notice'
   export default {
     components: {Editor, Toolbar},
     data() {
@@ -126,7 +129,6 @@
           scroll: false
         },
         imageList1: [],
-        imageList2: []
       }
     },
     created() {
@@ -174,6 +176,31 @@
       },
       handleSubmit() {
         console.log(this.noticeForm);
+        this.$refs.noticeForm.validate(valid => {
+          if(valid) {
+            const imageList2 = []
+            const diffImage = []
+            this.editor.getElemsByType('image').forEach(item => {
+              imageList2.push(item.src)
+            })
+            this.imageList1.forEach((img, i) => {
+              const s = imageList2.indexOf(img)
+              if(s == -1) {
+                diffImage.push(img)
+              }
+            })
+            const params = this.noticeForm
+            params.subId = localStorage.getItem('uid')
+            params.subName = localStorage.getItem('name')
+            params.target = JSON.stringify(this.noticeForm.target)
+            addNotice(params).then(res => {
+              if(res.data.code === 200) {
+                this.$refs.noticeForm.resetFields()
+                this.editor.setHtml("")
+              }
+            })
+          }
+        })
       },
       handleView(row) {
         
@@ -191,6 +218,11 @@
       beforeClose() {
         this.$refs.noticeForm.resetFields()
       }
+    },
+    beforeDestroy() {
+      const editor = this.editor
+      if (editor == null) return
+      editor.destroy()
     }
   }
 </script>
