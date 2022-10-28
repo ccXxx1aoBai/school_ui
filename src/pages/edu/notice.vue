@@ -12,7 +12,7 @@
               start-placeholder="开始时间" end-placeholder="结束时间" :default-time="['00:00:00', '23:59:59']"></el-date-picker>
             </el-col>
             <el-col :span="3" :offset="1">
-              <el-button type="primary" @click="getList(true)">查询</el-button>
+              <el-button type="primary" @click="getNoticeList(true)">查询</el-button>
               <el-button type="primary" @click="dialog = !dialog">新增</el-button>
             </el-col>
           </el-row>
@@ -22,9 +22,10 @@
           element-loading-spinner="el-icon-loading" element-loading-background="rgba(0, 0, 0, 0.8)">
             <el-table-column prop="id" label="通知编号" align="center"></el-table-column>
             <el-table-column prop="title" label="标题" align="center"></el-table-column>
-            <el-table-column prop="content" label="内容" align="center"></el-table-column>
+            <el-table-column prop="content" label="内容" align="center" width="300" show-overflow-tooltip></el-table-column>
             <el-table-column prop="subName" label="发布人" align="center"></el-table-column>
             <el-table-column prop="target" label="通知对象" align="center"></el-table-column>
+            <el-table-column prop="createTime" label="发布时间" align="center"></el-table-column>
             <el-table-column label="操作" align="center">
               <template slot-scope="scope">
                 <el-button type="text" icon="el-icon-view" style="color: #1565c0;" 
@@ -38,6 +39,12 @@
               </template>
             </el-table-column>
           </el-table>
+          <el-pagination
+          :total="total"
+          :current-page.sync="current"
+          :page-size.sync="size"
+          :page-sizes="[10, 20, 50, 100, 300, 500]"
+          layout="total, sizes, prev, pager, next, jumper"></el-pagination>
         </div>
       </div>
     </div>
@@ -95,16 +102,20 @@
     uploadImage
   } from '@/api'
   import {
-    addNotice
+    addNotice,
+    getNotice
   } from '@/api/notice'
   export default {
     components: {Editor, Toolbar},
     data() {
       return {
         siftName: '',
-        siftTime: [],
-        items: [{}],
+        siftTime: ['', ''],
+        items: [],
         loading: false,
+        total: 0,
+        current: 1,
+        size: 10,
         dialog: false,
         roleList: [],
         noticeForm: {
@@ -131,10 +142,22 @@
         imageList1: [],
       }
     },
+    computed: {
+      pagination() {
+        const {current, size} = this
+        return {current, size}
+      }
+    },
+    watch: {
+      pagination() {
+        this.getNoticeList(true)
+      }
+    },
     created() {
       getRoleOption().then(res => {
         this.roleList = res.data.data
       })
+      this.getNoticeList(true)
     },
     methods: {
       onCreated(editor) {
@@ -171,11 +194,24 @@
           }
         })
       },
-      getNoticeList() {
-
+      getNoticeList(load) {
+        this.loading = load
+        const params = {}
+        params.current = this.current
+        params.size = this.size
+        params.title = this.siftName
+        params.start = this.siftTime[0]
+        params.end = this.siftTime[1]
+        getNotice(params).then(res => {
+          const {list, total} = res.data.data
+          this.total = total
+          this.items = list
+          this.loading = false
+        }).catch(() => {
+          this.loading = false
+        })
       },
       handleSubmit() {
-        console.log(this.noticeForm);
         this.$refs.noticeForm.validate(valid => {
           if(valid) {
             const imageList2 = []
