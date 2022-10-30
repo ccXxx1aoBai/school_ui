@@ -21,14 +21,14 @@
           <el-table :data="items" border v-loading="loading" element-loading-text="加载中" height="660"
           element-loading-spinner="el-icon-loading" element-loading-background="rgba(0, 0, 0, 0.8)">
             <el-table-column prop="id" label="通知编号" align="center"></el-table-column>
-            <el-table-column prop="title" label="标题" align="center"></el-table-column>
-            <el-table-column prop="content" label="内容" align="center" width="300" show-overflow-tooltip></el-table-column>
+            <el-table-column prop="title" label="标题" width="200" show-overflow-tooltip align="center"></el-table-column>
             <el-table-column prop="subName" label="发布人" align="center"></el-table-column>
             <el-table-column prop="target" label="通知对象" align="center"></el-table-column>
             <el-table-column prop="createTime" label="发布时间" align="center"></el-table-column>
-            <el-table-column label="操作" align="center">
+            <el-table-column prop="updateTime" label="上次编辑时间" align="center"></el-table-column>
+            <el-table-column label="操作" align="center" width="220">
               <template slot-scope="scope">
-                <el-button type="text" icon="el-icon-view" style="color: #1565c0;" 
+                <el-button type="text" icon="el-icon-view" style="color: #1565c0;"
                 @click="handleView(scope.row)">预览</el-button>
                 <el-button type="text" icon="el-icon-edit" @click="handleEdit(scope.row)"
                 style="padding: 0 15px;">编辑</el-button>
@@ -53,6 +53,9 @@
     @close="beforeClose">
       <el-form :model="noticeForm" :rules="rules" ref="noticeForm" label-position="left" label-width="80px"
       style="height: 160px;">
+        <el-form-item v-show="false">
+          <el-input v-model="noticeForm.id"></el-input>
+        </el-form-item>
         <el-form-item label="通知标题" prop="title">
           <el-row>
             <el-col :span="16">
@@ -87,12 +90,19 @@
         <el-button type="primary" @click="handleSubmit">提交</el-button>
       </div>
     </el-dialog>
+
+    <el-dialog :visible="view" fullscreen :show-close="false">
+      <el-page-header slot="title" @back="goBack" :content="title" style="width: 70%;margin: auto;"></el-page-header>
+      <div style="width: 70%;margin: auto;">
+        <div v-html="content"></div>
+      </div>
+    </el-dialog>
   </div>
 </template>
 
 <script>
   import {
-    Editor, 
+    Editor,
     Toolbar,
   } from '@wangeditor/editor-for-vue'
   import {
@@ -103,7 +113,9 @@
   } from '@/api'
   import {
     addNotice,
-    getNotice
+    getNotice,
+    getDetail,
+    updateNotice,
   } from '@/api/notice'
   export default {
     components: {Editor, Toolbar},
@@ -119,6 +131,7 @@
         dialog: false,
         roleList: [],
         noticeForm: {
+          id: '',
           title: '',
           target: [],
           content: ''
@@ -140,6 +153,9 @@
           scroll: false
         },
         imageList1: [],
+        view: false,
+        title: '',
+        content: '',
       }
     },
     computed: {
@@ -186,7 +202,7 @@
           }
         }
         editor.getAllMenuKeys().forEach((tool, i) => {
-          if(tool.indexOf('fullScreen') == -1 && !tool.match(/^header[0-9]/)
+          if(tool && tool.indexOf('fullScreen') == -1 && !tool.match(/^header[0-9]/)
             && tool.indexOf('codeSelectLang') == -1 && tool.indexOf('Video') == -1
             && tool.indexOf('imageWidth') == -1 && tool.indexOf('emotion') == -1
             && tool.indexOf('todo') == -1 && tool.indexOf('codeBlock') == -1) {
@@ -229,30 +245,57 @@
             params.subId = localStorage.getItem('uid')
             params.subName = localStorage.getItem('name')
             params.target = JSON.stringify(this.noticeForm.target)
-            addNotice(params).then(res => {
-              if(res.data.code === 200) {
-                this.$refs.noticeForm.resetFields()
-                this.editor.setHtml("")
-              }
-            })
+            if(this.noticeForm.id) {  // 编辑
+              updateNotice(params).then(res => {
+                if(res.data.code === 200) {
+                  this.dialog = false
+                }
+              })
+            }else {   // 添加
+              addNotice(params).then(res => {
+                if(res.data.code === 200) {
+                  this.$refs.noticeForm.resetFields()
+                  this.editor.setHtml("")
+                }
+              })
+            }
           }
         })
       },
       handleView(row) {
-        
+        this.$fullLoading.load()
+        setTimeout(() => {
+          getDetail(row.id).then(res => {
+            this.title = res.data.data.title
+            this.content = res.data.data.content
+            this.view = true
+            this.$fullLoading.close()
+          }).catch(() => {
+            this.$fullLoading.close()
+          })
+        }, Math.floor(Math.random() * 1000 * 2))
       },
       handleEdit(row) {
         this.$nextTick(() => {
+          console.log(JSON.parse(row.target));
           Object.keys(row).forEach(key => {
-            this.$set(this.noticeForm, key, row[key])
+            if(key == 'target') {
+              this.$set(this.noticeForm, key, JSON.parse(row[key]))
+            }else {
+              this.$set(this.noticeForm, key, row[key])
+            }
           })
         })
+        this.dialog = true
       },
       handleDel(row) {
         
       },
       beforeClose() {
         this.$refs.noticeForm.resetFields()
+      },
+      goBack() {
+        this.view = false
       }
     },
     beforeDestroy() {

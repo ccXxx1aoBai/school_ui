@@ -19,3 +19,18 @@ export const getNotice = (paramsObj) => {
     params
   })
 }
+
+export const getDetail = (id) => {
+  return request({
+    url: `/notice/detail/${id}`,
+    method: 'get'
+  })
+}
+
+export const updateNotice = (data) => {
+  return request({
+    url: '/notice',
+    method: 'put',
+    data
+  })
+}
