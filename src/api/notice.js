@@ -34,3 +34,10 @@ export const updateNotice = (data) => {
     data
   })
 }
+
+export const delNotice = (id) => {
+  return request({
+    url: `/notice/${id}`,
+    method: 'delete'
+  })
+}

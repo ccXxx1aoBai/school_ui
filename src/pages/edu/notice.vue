@@ -116,6 +116,7 @@
     getNotice,
     getDetail,
     updateNotice,
+    delNotice
   } from '@/api/notice'
   export default {
     components: {Editor, Toolbar},
@@ -228,6 +229,7 @@
         })
       },
       handleSubmit() {
+        this.$fullLoading.show('正在提交...')
         this.$refs.noticeForm.validate(valid => {
           if(valid) {
             const imageList2 = []
@@ -250,6 +252,9 @@
                 if(res.data.code === 200) {
                   this.dialog = false
                 }
+                this.$fullLoading.close()
+              }).catch(() => {
+                this.$fullLoading.close()
               })
             }else {   // 添加
               addNotice(params).then(res => {
@@ -257,6 +262,9 @@
                   this.$refs.noticeForm.resetFields()
                   this.editor.setHtml("")
                 }
+                this.$fullLoading.close()
+              }).catch(() => {
+                this.$fullLoading.close()
               })
             }
           }
@@ -277,7 +285,6 @@
       },
       handleEdit(row) {
         this.$nextTick(() => {
-          console.log(JSON.parse(row.target));
           Object.keys(row).forEach(key => {
             if(key == 'target') {
               this.$set(this.noticeForm, key, JSON.parse(row[key]))
@@ -289,7 +296,11 @@
         this.dialog = true
       },
       handleDel(row) {
-        
+        delNotice(row.id).then(res => {
+          if(res.data.code === 200) {
+            this.getNoticeList(true)
+          }
+        })
       },
       beforeClose() {
         this.$refs.noticeForm.resetFields()

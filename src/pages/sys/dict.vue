@@ -26,7 +26,7 @@
             <el-table-column label="操作" align="center">
               <template slot-scope="scope">
                 <el-button type="text" icon="el-icon-edit" @click="handleEdit(scope.row)">编辑</el-button>
-                <el-popconfirm title="删除删除此条数据？" @confirm="handleDel(scope.row)">
+                <el-popconfirm title="是否删除此条数据？" @confirm="handleDel(scope.row)">
                   <el-button type="text" icon="el-icon-delete" slot="reference" style="color: #DA281F;padding: 0 15px;">删除</el-button>
                 </el-popconfirm>
               </template>
@@ -68,7 +68,9 @@
 <script>
 import {
   addDict,
-  getDict
+  getDict,
+  updateDict,
+  delDict
 } from '@/api/dict'
 export default {
   data() {
@@ -131,20 +133,42 @@ export default {
       })
     },
     handleEdit(row) {
-
+      this.$nextTick(() => {
+        Object.keys(row).forEach(key => {
+          this.$set(this.dictForm, key, row[key])
+        })
+        this.dialog = true
+      })
     },
     handleDel(row) {
-
+      this.$fullLoading.load('正在提交...')
+      delDict(row.id).then(res => {
+        if(res.data.code === 200) {
+          this.getDictList(false)
+        }
+        this.$fullLoading.close()
+      }).catch(() => {
+        this.$fullLoading.close()
+      })
     },
     handleSubmit() {
       this.$refs.dictForm.validate(valid => {
         if(valid) {
           this.$fullLoading.load('正在提交...')
           if(this.dictForm.id) {
-
+            updateDict(this.dictForm).then(res => {
+              if(res.data.code === 200) {
+                this.dialog = false
+                this.getDictList(false)
+              }
+              this.$fullLoading.close()
+            }).catch(() => {
+              this.$fullLoading.close()
+            })
           }else {
             addDict(this.dictForm).then(res => {
               if(res.data.code === 200) {
+                this.getDictList(true)
                 this.$refs.dictForm.resetFields()
               }
               this.$fullLoading.close()

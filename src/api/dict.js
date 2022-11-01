@@ -21,3 +21,18 @@ export const getDict = (paramsObj) => {
     params
   })
 }
+
+export const updateDict = (data) => {
+  return request({
+    url: '/dict',
+    method: 'put',
+    data
+  })
+}
+
+export const delDict = (id) => {
+  return request({
+    url: `/dict/${id}`,
+    method: 'delete'
+  })
+}
