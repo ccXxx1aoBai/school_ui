@@ -10,6 +10,14 @@ module.exports = defineConfig({
         pathRewrite: {
           '/school': ''
         }
+      },
+      '/socket': {
+        target: 'ws://localhost:9090',
+        ws: false,
+        originChange: true,
+        pathRewrite: {
+          '/socket': ''
+        }
       }
     }
   },

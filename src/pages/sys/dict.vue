@@ -115,6 +115,22 @@ export default {
   },
   created() {
     this.getDictList(true)
+    // const ws = new WebSocket('ws://127.0.0.1:9090/message/2')
+    // ws.addEventListener('open', e => {
+    //   console.log('连接成功');
+    // })
+    // ws.onerror = (err) => {
+    //   console.log(err);
+    // }
+    // ws.addEventListener('message', data => {
+    //   const {source, message} = JSON.parse(data.data)
+    //   console.log(data);
+    //   this.$notify({
+    //     title: '系统信息',
+    //     message: message,
+    //     type: 'success'
+    //   })
+    // })
   },
   methods: {
     getDictList(load) {
