@@ -30,7 +30,14 @@
                 </div>
               </div>
             </div>
-            <div class="user">
+            <div style="display: flex;flex: 0 0 48px;justify-content: center;align-items: center;margin: 0 20px;">
+              <el-badge :value="count">
+                <el-button type="text" style="color: #333;">
+                  <i class="el-icon-bell" style="font-size: 24px;" @click="drawer = !drawer"></i>
+                </el-button>
+              </el-badge>
+            </div>
+            <div class="user" style="margin-right: 0;">
               <div class="avatar">
                 <img src="@/assets/avatar.png">
               </div>
@@ -58,6 +65,47 @@
         </el-main>
       </el-container>
     </el-container>
+    <transition name="fade" style="overflow: hidden;">
+      <div class="drawer" v-show="drawer">
+        <div class="drawer_title">
+          <h1>消息中心</h1>
+          <el-button type="text" icon="el-icon-document-remove" style="margin: 0 10px;">全部已读</el-button>
+          <i class="el-icon-close" @click="drawer = false"></i>
+        </div>
+        <div class="drawer_body">
+          <el-row>
+            <el-col :span="8">
+              <el-select v-model="noticeType" placeholder="消息类型" style="margin-left: 10px;">
+                <el-option value="0" label="全部"></el-option>
+                <el-option value="1" label="通知"></el-option>
+                <el-option value="2" label="消息"></el-option>
+              </el-select>
+            </el-col>
+            <el-col :span="8" :offset="1">
+              <el-select v-model="readStatus" placeholder="消息类型" style="margin-left: 10px;">
+                <el-option value="0" label="全部"></el-option>
+                <el-option value="1" label="未读"></el-option>
+                <el-option value="2" label="已读"></el-option>
+              </el-select>
+            </el-col>
+          </el-row>
+          <div style="width: 100%;height: 1px;background-color: #eee;margin: 10px 0 5px;"></div>
+          <div class="notice_list">
+            <div class="notice_list_item">
+              <div class="notice_list_item_title">
+                <span class="marker"></span>
+                <span class="text">放假通知</span>
+                <span class="btn" @click="handleChangeNoticeStatus">已读</span>
+              </div>
+              <div class="notice_list_item_label">
+                <el-tag effect="plain">校级通知</el-tag>
+                <span>4小时前</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </transition>
   </div>
 </template>
 
@@ -68,12 +116,19 @@ import Menu from './components/Menu.vue';
     name: "",
     data() {
       return {
-        items: []
+        items: [],
+        drawer: false,
+        noticeType: '0',
+        readStatus: '1',
       }
     },
     computed: {
       curRouterName() {
         return this.$route.name
+      },
+      count() {
+        console.log(this.$store);
+        return this.$store.getters.notice_total
       }
     },
     watch: {
@@ -114,6 +169,9 @@ import Menu from './components/Menu.vue';
           this.items.splice(index, 1)
           this.$router.push(this.items[index - 1].path)
         }
+      },
+      handleChangeNoticeStatus() {
+
       }
     }
 }
@@ -121,7 +179,7 @@ import Menu from './components/Menu.vue';
 
 <style lang="scss" scoped>
 .el-container{
-
+  overflow: hidden;
   .el-aside{
     background-color: #545c64;
 
@@ -240,7 +298,8 @@ import Menu from './components/Menu.vue';
       height: calc(100vh - 100px);
       background: #ffffff;
       margin: 10px;
-      overflow: hidden;
+      overflow-y: auto;
+      overflow-x: hidden;
 
       ::v-deep .el-pagination{
         position: absolute;
@@ -249,5 +308,109 @@ import Menu from './components/Menu.vue';
       }
     }
   }
+}
+.notice_list {
+  width: 100%;
+
+  &_item {
+    width: 100%;
+    padding: 5px 16px 10px;
+    box-sizing: border-box;
+
+    &:nth-child(n-1) {
+      border-bottom: 1px solid #f5f5f5;
+    }
+
+    &_title {
+      display: flex;
+      justify-content: start;
+      align-items: center;
+      
+      .marker {
+        display: inline-block;
+        flex: 0 0 6px;
+        height: 6px;
+        border-radius: 50%;
+        margin-right: 5px;
+        background-color: #00a679;
+      }
+
+      .text {
+        width: 100%;
+        font-size: 16px;
+      }
+      .btn {
+        display: none;
+        margin-right: 10px;
+        color: #00a679;
+        font-size: 12px;
+        white-space: nowrap;
+        cursor: pointer;
+        user-select: none;
+      }
+
+      &:hover .btn{
+        display: block;
+      }
+    }
+
+    &_label {
+      display: flex;
+      margin-top: 8px;
+
+      span:last-child {
+        width: 100%;
+        color: #999;
+        font-size: 12px;
+        text-align: right;
+      }
+    }
+  }
+}
+.drawer {
+  position: absolute;
+  top: 72px;
+  right: 0;
+  width: 400px;
+  height: calc(100vh - 72px);
+  background-color: #fff;
+  z-index: 999;
+  box-shadow: 0 0 2px rgba($color: #000000, $alpha: .3);
+
+  &_title {
+    display: flex;
+    align-items: center;
+    height: 60px;
+    line-height: 60px;
+    padding-left: 10px;
+    box-shadow: 0 0 2px rgba($color: #000000, $alpha: .3);
+
+    h1 {
+      width: 100%;
+    }
+
+    i {
+      margin-right: 10px;
+      font-size: 20px;
+
+      &:hover {
+        color: #00a679;
+      }
+    }
+  }
+
+  &_body {
+    padding-top: 10px;
+  }
+}
+
+.fade-enter-active, .fade-leave-active {
+  transition: all .8s;
+}
+.fade-enter, .fade-leave-to /* .fade-leave-active below version 2.1.8 */ {
+  right: -400px;
+}
+.fade-enter-to {
+  right: 0;
 }
 </style>

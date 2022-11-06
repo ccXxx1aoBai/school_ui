@@ -3,6 +3,7 @@ const user = {
     uid: '',
     username: '',
     avatar: '',
+    notice_total: 0
   },
 
   mutations: {
@@ -14,7 +15,10 @@ const user = {
     },
     SET_AVATAR: (state, data) => {
       state.avatar = data
-    }
+    },
+    SET_NOTICE_TOTAL: (state, data) => {
+      state.notice_total += data
+    },
   },
 
   actions: {
@@ -22,6 +26,9 @@ const user = {
       commit('SET_UID', uid)
       commit('SET_USERNAME', username)
       commit('SET_AVATAR', avatar)
+    },
+    NOTICE_TOTAL: ({commit}, count) => {
+      commit("SET_NOTICE_TOTAL", count)
     }
   }
 }

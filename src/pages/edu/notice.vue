@@ -68,7 +68,7 @@
           <el-row>
             <el-col :span="16">
               <el-select v-model="noticeForm.target" clearable multiple style="width: 100%;">
-                <el-option v-for="role in roleList" :key="role.name" :value="role.role" :label="role.name"></el-option>
+                <el-option v-for="role in roleList" :key="role.name" :value="role.id" :label="role.name"></el-option>
               </el-select>
             </el-col>
           </el-row>
@@ -229,7 +229,7 @@
         })
       },
       handleSubmit() {
-        this.$fullLoading.show('正在提交...')
+        this.$fullLoading.load('正在提交...')
         this.$refs.noticeForm.validate(valid => {
           if(valid) {
             const imageList2 = []

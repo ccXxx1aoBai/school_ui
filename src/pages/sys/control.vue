@@ -1,6 +1,6 @@
 <template>
   <div>
-    <el-row justify="center" style="marginTop: 10px;" :gutter="24">
+    <el-row justify="center" style="marginTop: 10px;height: 405px;" :gutter="24">
       <el-col :span="8" :offset="1">
         <div class="panel">
           <el-descriptions title="CPU" :column="1">
@@ -9,27 +9,21 @@
             </el-descriptions-item>
           </el-descriptions>
         </div>
-        <div class="panel scroll">
-          <el-descriptions title="硬盘信息" :column="1" :colon="false">
-            <el-descriptions-item :label="info.model" v-for="info in sysFileInfo" :key="info.model">
-              <el-collapse>
-                <el-collapse-item :title="info.model">
-                  <div>
-                    <p>总容量：{{info.size}}</p>
-                    <div v-for="os in info.os" :key="os.name" style="width: 100%;margin: 10px auto;">
-                      <p>{{os.name}}</p>
-                      <div class="progress">
-                        <div class="progress-wrap">
-                          <div class="progress-used" :style="{'width': `${os.lused * 100 / os.ltotal}%`}"></div>
-                        </div>
-                      </div>
-                      <p>{{`已用 ${os.used}`}}，{{`共 ${os.total}`}}</p>
-                    </div>
+        <div class="panel">
+          <h1>硬盘使用情况</h1>
+          <div class="scroll">
+            <div style="display: flex;flex-wrap: wrap;">
+              <div v-for="os in sysFileInfo" :key="os.name" style="width: 50%;">
+                <p>{{os.name}}</p>
+                <div class="progress">
+                  <div class="progress-wrap">
+                    <div class="progress-used" :style="{'width': `${os.lused * 100 / os.ltotal}%`}"></div>
                   </div>
-                </el-collapse-item>
-              </el-collapse>
-            </el-descriptions-item>
-          </el-descriptions>
+                </div>
+                <p>{{`已用 ${os.used}`}}，{{`共 ${os.total}`}}</p>
+              </div>
+            </div>
+          </div>
         </div>
       </el-col>
       <el-col :span="5" :offset="1">
@@ -65,7 +59,7 @@
       </el-col>
     </el-row>
     <el-row>
-      <el-col :span="22" :offset="1">
+      <el-col :span="21" :offset="1">
         <div class="panel">
           <el-descriptions title="系统信息">
             <el-descriptions-item label="服务器名称">
@@ -91,7 +85,7 @@
       </el-col>
     </el-row>
     <el-row>
-      <el-col :span="22" :offset="1">
+      <el-col :span="21" :offset="1">
         <div class="panel">
           <el-descriptions title="JVM信息">
             <el-descriptions-item label="JVM名称">
@@ -132,7 +126,7 @@
           </el-descriptions>
         </div>
       </el-col>
-      <el-col :span="10" :offset="2">
+      <el-col :span="9" :offset="2">
         <div class="panel">
           <el-descriptions title="Redis" :column="2">
             <el-descriptions-item label="端口">
@@ -197,7 +191,11 @@
             })
           })
         })
-        this.sysFileInfo = sysFileInfo
+        sysFileInfo.forEach(file => {
+          file.os.forEach(item => {
+            this.sysFileInfo.push(item)
+          })
+        })
         Object.keys(cpuInfo).forEach((key, index) => {
           this.cpuInfo.splice(index, 0, {name: key, value: cpuInfo[key]})
         })
@@ -221,9 +219,6 @@
           this.drawMemory(data)
         })
       }, 1000 * 10);
-    },
-    beforeDestroy() {
-      clearInterval(this.interval)
     },
     methods: {
       drawMemory(data) {
@@ -415,6 +410,9 @@
           ]
         })
       }
+    },
+    beforeDestroy() {
+      clearInterval(this.interval)
     }
   }
 </script>
@@ -426,16 +424,18 @@
   padding: 10px 20px;
   background-color: #ffffff;
   box-shadow: 0 0 12px 0 rgba($color: #000000, $alpha: .3);
-
-  &.scroll{
-    max-height: 189px;
+  .scroll{
+    max-height: 170px;
     overflow-y: auto;
   }
-  &::-webkit-scrollbar{
-    width: 4px;
-    height: 4px;
+  .scroll::-webkit-scrollbar{
+    width: 8px;
+    height: 8px;
+    border-radius: 5px;
   }
-
+  .scroll:-webkit-scrollbar-thumb {
+    border-radius: 5px;
+  }
   p {
     padding: 10px 0;
   }

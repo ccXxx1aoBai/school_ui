@@ -4,6 +4,7 @@ import ElementUI from 'element-ui'
 import '@/assets/css/element-variables.scss'
 import router from './router'
 import store from './store'
+import { Notification } from 'element-ui'
 
 Vue.config.productionTip = false
 
@@ -24,6 +25,24 @@ Vue.prototype.$fullLoading = {
   close: () => {
     loading.close()
   }
+}
+
+const ws = new WebSocket('ws://127.0.0.1:9090/notice/push')
+ws.onopen = (res) => {
+  console.log('连接成功');
+}
+ws.onerror = (err) => {
+  console.log('连接失败');
+}
+ws.onmessage = (msg) => {
+  console.log(msg);
+  Notification.info({
+    title: '系统提示',
+    message: '您有一条新消息',
+    showClose: false,
+    position: 'top-right'
+  })
+  store.dispatch('NOTICE_TOTAL', 1)
 }
 
 new Vue({
