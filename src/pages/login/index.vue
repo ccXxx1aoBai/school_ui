@@ -72,11 +72,13 @@ export default {
       this.$refs.form.validate(valid => {
         if(valid) {
           login(this.form).then(res => {
-            res.headers.token && localStorage.setItem('token', res.headers.token)
-            const {data} = res.data
-            localStorage.setItem('uid', data.id)
-            this.$store.dispatch('GetUserInfo', data)
-            this.$router.push('/index')
+            if(res) {
+              const {data} = res.data
+              res.headers.token && localStorage.setItem('token', res.headers.token)
+              localStorage.setItem('uid', data.id)
+              this.$store.dispatch('GetUserInfo', data)
+              this.$router.push('/index')
+            }
           })
         }
       })

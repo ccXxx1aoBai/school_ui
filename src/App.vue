@@ -44,4 +44,10 @@ p,h1,h2,h3,h4,h5,h6{
 .tools{
   margin: 20px 0;
 }
+.warn {
+  color: #E18A3B !important;
+}
+.err {
+  color: #DA281F !important;
+}
 </style>

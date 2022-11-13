@@ -114,7 +114,7 @@ import {getRoleList} from '@/api/role'
         this.tree = res.data.data
       })
       this.getList(true, this.page, this.size, [])
-      getRoleList().then(res => {
+      getRoleList({name: ''}).then(res => {
         const {data} = res.data
         this.roleList = data
       })
@@ -138,7 +138,6 @@ import {getRoleList} from '@/api/role'
         this.getList(true, this.page, this.size, [])
       },
       handleTreeClick(tree) {
-        console.log(tree);
         const arr = []
         if(tree.children.length > 0) {
           tree.children.forEach(item => {

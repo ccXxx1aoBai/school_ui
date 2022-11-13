@@ -9,7 +9,7 @@
             </el-col>
             <el-col :span="5" :offset="1">
               <el-date-picker type="daterange" v-model="siftTime" range-separator="至" value-format="yyyy-MM-dd HH:mm:ss"
-              start-placeholder="开始时间" end-placeholder="结束时间" :default-time="['00:00:00', '23:59:59']"></el-date-picker>
+              start-placeholder="开始时间" align="center" end-placeholder="结束时间" :default-time="['00:00:00', '23:59:59']"></el-date-picker>
             </el-col>
             <el-col :span="3" :offset="1">
               <el-button type="primary" @click="getNoticeList(true)">查询</el-button>
