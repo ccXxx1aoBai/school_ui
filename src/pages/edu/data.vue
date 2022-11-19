@@ -2,10 +2,10 @@
   <div>
     <div class="wrap">
       <div class="top">
-        <div class="panel">
+        <div class="panel" style="flex: 0 0 400px;">
           <h1>上课教室</h1>
           <div>
-            <el-tag v-for="i in 10" :key="i">B20{{i}}</el-tag>
+            <el-tag v-for="i in 9" :key="i">B20{{i}}</el-tag>
           </div>
         </div>
         <div class="qd">

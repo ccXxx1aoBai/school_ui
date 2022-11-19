@@ -301,6 +301,25 @@ import Menu from './components/Menu.vue';
       overflow-y: auto;
       overflow-x: hidden;
 
+      &::-webkit-scrollbar {
+        width: 12px;
+        height: 12px;
+      }
+
+      &::-webkit-scrollbar-thumb {
+        border-radius: 8px;
+        background-color: rgba($color: #000000, $alpha: .1);
+
+        &:hover {
+          background-color: rgba($color: #000000, $alpha: .3);
+        }
+      }
+
+      &::-webkit-scrollbar-track {
+        border-radius: 8px;
+        background-color: rgba($color: #000000, $alpha: .1);
+      }
+
       ::v-deep .el-pagination{
         position: absolute;
         bottom: 30px;
