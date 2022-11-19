@@ -1,6 +1,10 @@
 import request from '@/utils/request'
 
-// 获取用户列表
+/**
+ * 获取用户列表
+ * @param {*} params 
+ * @returns 
+ */
 export const getUserList = (params) => {
   const param = new URLSearchParams()
   Object.keys(params).forEach(key => {

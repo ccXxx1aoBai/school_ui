@@ -29,6 +29,11 @@ export const getEmployeeType = () => {
   })
 }
 
+/**
+ * 新增员工
+ * @param {empForm} 员工信息表单 
+ * @returns 
+ */
 export const addEmployee = (data) => {
   return request({
     url: '/employee',
@@ -37,6 +42,11 @@ export const addEmployee = (data) => {
   })
 }
 
+/**
+ * 修改员工信息
+ * @param {empForm} 员工信息表单 
+ * @returns 
+ */
 export const updateEmployee = (data) => {
   return request({
     url: '/employee',
@@ -45,6 +55,11 @@ export const updateEmployee = (data) => {
   })
 }
 
+/**
+ * 删除员工
+ * @param {id} 员工ID
+ * @returns 
+ */
 export const delEmployee = (id) => {
   return request({
     url: `/employee/${id}`,
