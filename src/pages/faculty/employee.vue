@@ -168,21 +168,25 @@
         this.$refs.empForm.resetFields()
       },
       handleSubmit() {
-        if(this.empForm.id) {   // 修改
-          updateEmployee(this.empForm).then(res => {
-            if(res.data.code === 200) {
-              this.dialog = false
-              this.getList(true)
+        this.$refs.empForm.validato(valid => {
+          if(valid) {
+            if(this.empForm.id) {   // 修改
+              updateEmployee(this.empForm).then(res => {
+                if(res.data.code === 200) {
+                  this.dialog = false
+                  this.getList(true)
+                }
+              })
+            }else {   // 添加
+              addEmployee(this.empForm).then(res => {
+                if(res.data.code === 200) {
+                  this.$refs.empForm.resetFields()
+                  this.getList(true)
+                }
+              })
             }
-          })
-        }else {   // 添加
-          addEmployee(this.empForm).then(res => {
-            if(res.data.code === 200) {
-              this.$refs.empForm.resetFields()
-              this.getList(true)
-            }
-          })
-        }
+          }
+        })
       },
       handleEdit(row) {
         this.$nextTick(() => {

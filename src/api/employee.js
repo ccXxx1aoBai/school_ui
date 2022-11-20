@@ -66,3 +66,10 @@ export const delEmployee = (id) => {
     method: 'delete'
   })
 }
+
+export const getEmpByType = () => {
+  return request({
+    url: '/employee/repair',
+    method: 'get'
+  })
+}

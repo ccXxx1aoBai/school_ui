@@ -53,7 +53,7 @@
           :current-page.sync="page"
           :page-size="size"
           :page-sizes="[20, 30, 50, 100, 200]"
-          layout="total, sizes, prev, pager, next, jumper"
+          layout="total"
           @size-change="handleSizeChange" />
         </div>
       </div>
@@ -136,7 +136,7 @@
         tableData: [],
         total: 0,
         page: 1,
-        size: 20,
+        size: 100,
         options: [],
         dialog: false,
         menuForm: {

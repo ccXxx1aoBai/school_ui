@@ -31,7 +31,7 @@
         <el-table-column prop="birth" label="生日" align="center"></el-table-column>
         <el-table-column prop="phone" label="手机号码" align="center"></el-table-column>
         <el-table-column prop="dept" label="所属学院" align="center"></el-table-column>
-        <el-table-column prop="type" label="所属类别" align="center"></el-table-column>
+        <el-table-column prop="position" label="职称" align="center"></el-table-column>
         <el-table-column prop="joinUs" label="入职时间" align="center"></el-table-column>
         <el-table-column label="操作" align="center">
           <div style="display: flex;" slot-scope="scope">
@@ -82,7 +82,7 @@
           </el-select>
         </el-form-item>
         <el-form-item prop="birth" label="生日">
-          <el-date-picker v-model="teacherForm.birth" format="yyyy-MM-dd" value-format="yyyy-MM-dd" 
+          <el-date-picker v-model="teacherForm.birth" align="center" format="yyyy-MM-dd" value-format="yyyy-MM-dd" 
           clearable placeholder="请选择"></el-date-picker>
         </el-form-item>
         <el-form-item prop="dept" label="所属学院：">
@@ -215,6 +215,7 @@
         this.$refs.teacherForm.resetFields()
       },
       handleSubmit() {
+        this.$fullLoading.load()
         this.$refs.teacherForm.validate(valid => {
           if(valid) {
             if((this.teacherForm.id??'') == '') {
@@ -222,16 +223,22 @@
               addTeacher(this.teacherForm).then(res => {
                 if(res.data.code === 200) {
                   this.$refs.teacherForm.resetFields()
-                  this.getList(true)
+                  this.getList(false)
                 }
+                this.$fullLoading.close()
+              }).catch(() => {
+                this.$fullLoading.close()
               })
             }else {
               // 修改
               updateTeacher(this.teacherForm).then(res => {
                 if(res.data.code === 200) {
                   this.dialog = false
-                  this.getList(true)
+                  this.getList(false)
                 }
+                this.$fullLoading.close()
+              }).catch(() => {
+                this.$fullLoading.close()
               })
             }
           }
