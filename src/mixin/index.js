@@ -3,6 +3,10 @@ export default {
     return {
       siftName: '',
       siftTime: '',
+      siftYear: '',
+      siftType: '',
+      siftDept: '',
+      deptList: [],
       loading: false,
       tableData: [{}],
       total: 0,

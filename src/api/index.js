@@ -38,3 +38,10 @@ export const uploadImage = (file, paramsObj) => {
     }
   })
 }
+
+export const getSysAvatar = () => {
+  return request({
+    url: '/file/avatar',
+    method: 'get'
+  })
+}

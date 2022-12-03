@@ -42,6 +42,12 @@
               </template>
             </el-table-column>
           </el-table>
+          <el-pagination
+            :total="total"
+            :current-page.sync="current"
+            :page-size.sync="size"
+            :page-sizes="[10, 20, 50, 100, 200, 500]"
+            layout="total, sizes, prev, pager, next, jumper"></el-pagination>
         </div>
       </div>
     </div>
@@ -118,6 +124,11 @@
       }
     },
     mixins: [mixin],
+    watch: {
+      pagination() {
+        this.getRoomList(true)
+      }
+    },
     created() {
       this.getRoomList(true)
     },

@@ -127,7 +127,6 @@ import Menu from './components/Menu.vue';
         return this.$route.name
       },
       count() {
-        console.log(this.$store);
         return this.$store.getters.notice_total
       }
     },

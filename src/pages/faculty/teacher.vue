@@ -17,7 +17,7 @@
             </el-select>
           </el-col>
           <el-col :span="3" :offset="1">
-            <el-button type="primary" @click="handleSearch">查询</el-button>
+            <el-button type="primary" @click="getList(true)">查询</el-button>
             <el-button type="primary" @click="dialog = !dialog">新增</el-button>
             <el-button type="primary">导出</el-button>
           </el-col>
@@ -113,9 +113,18 @@
 </template>
 
 <script>
-  import {getDepartmentList} from '@/api/department'
-  import {getTeacherList, addTeacher, updateTeacher, delTeacher} from '@/api/teacher'
-  import {getPositionList} from '@/api/index'
+  import {
+    getDepartmentList
+  } from '@/api/department'
+  import {
+    getTeacherList,
+    addTeacher,
+    updateTeacher,
+    delTeacher
+  } from '@/api/teacher'
+  import {
+    getPositionList
+  } from '@/api/index'
   export default {
     name: '',
     data() {
@@ -187,9 +196,6 @@
         }).catch(() => {
           this.tableLoading = false
         })
-      },
-      handleSearch() {
-        this.getList(true)
       },
       handleEdit(row) {
         this.dialog = !this.dialog
