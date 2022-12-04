@@ -2,13 +2,18 @@
   <div>
     <el-row>
       <el-col :span="3" v-for="avatar in items" :key="avatar.id" style="margin: 20px 10px 20px 15px;">
-        <el-card v-if="avatar.id" shadow="hover">
-          <el-image :src="avatar.attachName" shape="square" :size="64" :preview-src-list="preview" @click="imagePreview(avatar)"></el-image>
-          <div style="padding: 10px 0;">
+        <el-card v-if="avatar.attachId" shadow="hover">
+          <el-image :src="avatar.attachName" fit="fill" :preview-src-list="preview" @click="imagePreview(avatar)"
+            style="width: 170px;height: 170px;display: block;"></el-image>
+          <div style="padding: 10px 0;position: relative;">
             <span>{{avatar.attachId}}</span>
-            <div style="margin-top: 5px;">
+            <div style="margin-top: 5px">
               <span style="margin-right: 10px;">{{ avatar.createTime }}</span>
-              <el-popconfirm title="是否删除此头像" @confirm="delAvatar(avatar)">
+              <div  v-if="!avatar.id" style="line-height: 16px;">
+                <el-button type="text" @click="uploadAvatar(avatar)" style="padding: 0;">上传</el-button>
+                <el-button type="text" class="err" @click="remove(avatar)" style="padding: 0;">移除</el-button>
+              </div>
+              <el-popconfirm v-else title="是否删除此头像" @confirm="delAvatar(avatar)">
                 <el-button type="text" class="err" slot="reference">删除</el-button>
               </el-popconfirm>
             </div>
@@ -20,14 +25,12 @@
             action="#"
             accept=".png"
             :show-file-list="false"
-            :on-success="handleAvatarSuccess"
-            :before-upload="beforeAvatarUpload"
-            :on-change="avatarChange"
-            :auto-upload="false"
+            :before-upload="beforeUpload"
+            :auto-upload="true"
             :limit="10"
-            multiple>
-            <img v-if="imageUrl" :src="imageUrl" class="avatar">
-            <i v-else class="el-icon-plus avatar-uploader-icon"></i>
+            multiple
+            ref="upload">
+            <i class="el-icon-plus avatar-uploader-icon"></i>
           </el-upload>
           <div style="padding: 10px 0;">
             <p>点击上传新头像</p>
@@ -41,32 +44,57 @@
 
 <script>
   import {
-    getSysAvatar
+    getSysAvatar,
+    uploadImage,
+    delSysAvatar
   } from '@/api'
+  import moment from 'moment'
   export default {
     name: 'avatar',
     data() {
       return {
         items: [],
         preview: [],
-        imageUrl: ''
+        fileList: []
       }
     },
     created() {
-      getSysAvatar().then(res => {
-        this.items = res.data.data
-        this.items.unshift({})
-      })
+      this.$fullLoading.load()
+      this.getAvatarList()
     },
     methods: {
-      beforeAvatarUpload(file) {
-        console.log(file);
+      getAvatarList() {
+        getSysAvatar().then(res => {
+          this.$fullLoading.close()
+          this.items = res.data.data
+          this.items.unshift({})
+        }).catch(() => {
+          this.$fullLoading.close()
+        })
       },
-      avatarChange(file, fileList) {
-        console.log(file, fileList);
-      },
-      handleAvatarSuccess(res, file, fileList) {
-        console.log(res, file, fileList);
+      beforeUpload(file) {
+        this.items.shift()
+        if(file.size / 1024 > 512) {
+          this.$notify.error({
+            message: '图片大小不能超过512Kb',
+            title: '系统提示'
+          })
+          return false
+        }
+        if(file.type != 'image/png') {
+          this.$notify.error({
+            message: '仅支持上传PNG格式图片',
+            title: '系统提示'
+          })
+          return false
+        }
+        this.items.unshift({
+          attachId: file.name,
+          attachName: URL.createObjectURL(file),
+          createTime: moment(new Date()).format('YYYY-MM-DD HH:mm:ss'),
+          file: file
+        })
+        this.items.unshift({})
       },
       imagePreview(avatar) {
         if(this.preview.length == 1) {
@@ -76,8 +104,29 @@
         }
       },
       delAvatar(avatar) {
-        console.log(avatar);
+        delSysAvatar(avatar.id).then(res => {
+          if(res.data.code === 200) {
+            this.getAvatarList()
+          }
+        })
       },
+      uploadAvatar(avatar) {
+        const index = this.items.findIndex(file => {
+          return !file.id && avatar.attachName == file.attachName && avatar.attachId == file.attachId
+        })
+        uploadImage(avatar.file, {uid: localStorage.getItem('uid'), type: 'avatar'}).then(res => {
+          if(res.data.code === 200) {
+            this.$set(this.items[index], 'id', res.data.data.id)
+            this.$set(this.items[index], 'attachName', res.data.data.downUrl)
+          }
+        })
+      },
+      remove(avatar) {
+        const index = this.items.findIndex(file => {
+          return !file.id && avatar.attachName == file.attachName && avatar.attachId == file.attachId
+        })
+        this.items.splice(index, 1)
+      }
     }
   }
 </script>

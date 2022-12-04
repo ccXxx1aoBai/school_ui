@@ -45,3 +45,10 @@ export const getSysAvatar = () => {
     method: 'get'
   })
 }
+
+export const delSysAvatar = (id) => {
+  return request({
+    url: `/file/avatar/${id}`,
+    method: 'delete'
+  })
+}
