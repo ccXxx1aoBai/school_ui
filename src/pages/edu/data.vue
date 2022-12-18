@@ -14,14 +14,14 @@
               <img :src="require('@/assets/xs.png')">
               <div>
                 <p>学生</p>
-                <p style="color: #1fdeae;">23141</p>
+                <p style="color: #1fdeae;">{{studentTotal}}</p>
               </div>
             </div>
             <div>
               <img :src="require('@/assets/ls.png')" style="width: 56px;height: 56px;">
               <div>
                 <p>教师</p>
-                <p style="color: #bd9ee2;">579</p>
+                <p style="color: #bd9ee2;">{{teacherTotal}}</p>
               </div>
             </div>
             <div>
@@ -53,18 +53,30 @@
 
 <script>
   import * as echarts from 'echarts'
+  import {
+    getCount
+  } from '@/api/index'
   export default {
     name: '',
     data() {
       return {
-        
+        studentTotal: 0,
+        teacherTotal: 0
       }
+    },
+    created() {
+      getCount().then(res => {
+        console.log(res);
+        const {studentTotal, teacherTotal, dept, grade} = res.data.data
+        this.studentTotal = studentTotal
+        this.teacherTotal = teacherTotal
+        this.draw1(dept)
+        this.draw3(grade)
+      })
     },
     mounted() {
       this.draw()
-      this.draw1()
       this.draw2()
-      this.draw3()
     },
     methods: {
       draw() {
@@ -82,8 +94,9 @@
           tooltip: {
             trigger: 'item',
             formatter: (item) => {
-              return '出勤情况<br>' + item[0].marker + '&nbsp;&nbsp;' + item[0].seriesName + '&nbsp;&nbsp;'  + item[0].value
+              return item.length >= 0 ? '出勤情况<br>' + item[0].marker + '&nbsp;&nbsp;' + item[0].seriesName + '&nbsp;&nbsp;'  + item[0].value
                     + '人<br>' + item[1].marker + '&nbsp;&nbsp;' + item[1].seriesName + '&nbsp;&nbsp;' + item[1].value + '人'
+                    : '出勤情况<br>' + item.marker + '&nbsp;&nbsp;' + item.seriesName + '&nbsp;&nbsp;'  + item.value
             }
           },
           xAxis: {
@@ -115,8 +128,14 @@
           ]
         })
       },
-      draw1() {
+      draw1(data) {
         const chart1 = echarts.init(this.$refs.container1)
+        const dept = []
+        const count = []
+        data.forEach(item => {
+          item.name = item.label
+          item.value = item.total
+        })
         chart1.setOption({
           title: {
             text: '学院学生人数',
@@ -140,17 +159,7 @@
               label: {
                 show: false
               },
-              data: [
-                {name: '水利1', value: 1},
-                {name: '土建1', value: 1},
-                {name: '机电1', value: 1},
-                {name: '信工1', value: 1},
-                {name: '水利', value: 1},
-                {name: '土建', value: 1},
-                {name: '机电', value: 1},
-                {name: '信工', value: 1},
-                {name: '土建2', value: 1},
-              ]
+              data: data
             }
           ]
         })
@@ -189,8 +198,12 @@
           ]
         })
       },
-      draw3() {
+      draw3(data) {
         const chart3 = echarts.init(this.$refs.container3)
+        const total = []
+        data.forEach(item => {
+          total.push(item.total)
+        })
         chart3.setOption({
           title: {
             text: '各年级人数',
@@ -200,8 +213,10 @@
           tooltip: {
             trigger: 'item',
             formatter: (item) => {
-              return '各年级人数<br>' + item[0].marker + '&nbsp;&nbsp;' + item[0].seriesName + '&nbsp;&nbsp;'  + item[0].value
-                    + '人<br>' + item[1].marker + '&nbsp;&nbsp;' + item[1].seriesName + '&nbsp;&nbsp;' + item[1].value + '人'
+              return item.length >= 0 ? '各年级人数<br>' + item[0].marker + '&nbsp;&nbsp;' + item[0].seriesName + '&nbsp;&nbsp;'  + item[0].value
+                    + '人<br>' + item[1].marker + '&nbsp;&nbsp;' + item[1].seriesName + '&nbsp;&nbsp;' + item[1].value
+                    + '人<br>' + item[2].marker + '&nbsp;&nbsp;' + item[2].seriesName + '&nbsp;&nbsp;' + item[2].value
+                    : '各年级人数<br>' + item.marker + '&nbsp;&nbsp;' + item.seriesName + '&nbsp;&nbsp;'  + item.value
             }
           },
           legend: {
@@ -231,6 +246,10 @@
               type: 'line',
               name: '外出人数',
               data: [1523, 241, 32, 59]
+            }, {
+              type: 'bar',
+              name: '学生人数',
+              data: total
             }
           ]
         })

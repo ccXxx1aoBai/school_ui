@@ -52,3 +52,10 @@ export const delSysAvatar = (id) => {
     method: 'delete'
   })
 }
+
+export const getCount = () => {
+  return request({
+    url: '/count',
+    method: 'get'
+  })
+}

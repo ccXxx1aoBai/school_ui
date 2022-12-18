@@ -1,10 +1,6 @@
 <template>
   <div>
     <div class="wrap">
-      <div class="tree">
-        <el-tree :data="tree" node-key="id" accordion 
-        :expand-on-click-node="false" @node-click="handleTreeClick" />
-      </div>
       <div class="content">
         <div class="tools">
           <el-row>
@@ -111,6 +107,7 @@ import {getRoleList} from '@/api/role'
     },
     created() {
       getDepartmentList().then(res => {
+        console.log(res);
         this.tree = res.data.data
       })
       this.getList(true, this.page, this.size, [])
@@ -136,17 +133,6 @@ import {getRoleList} from '@/api/role'
       },
       handleSelect() {
         this.getList(true, this.page, this.size, [])
-      },
-      handleTreeClick(tree) {
-        const arr = []
-        if(tree.children.length > 0) {
-          tree.children.forEach(item => {
-            arr.push(item.id)
-          })
-        }else {
-          arr.push(tree.id)
-        }
-        this.getList(true, this.page, this.size, arr)
       },
       handleChangeFinish(row) {
         if(this.edit) {
