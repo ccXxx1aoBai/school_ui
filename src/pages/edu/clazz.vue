@@ -42,6 +42,12 @@
             </template>
           </el-table-column>
         </el-table>
+        <el-pagination
+        :total="total"
+        :page-size.sync="size"
+        :current-page.sync="current"
+        :page-sizes="[10, 20, 50, 100, 200, 500]"
+        layout="total, sizes, prev, pager, next, jumper"></el-pagination>
       </div>
     </div>
 

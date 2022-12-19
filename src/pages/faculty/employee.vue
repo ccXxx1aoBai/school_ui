@@ -18,39 +18,41 @@
           </el-col>
         </el-row>
       </div>
-      <el-table :data="dataList" border v-loading="tableLoading" element-loading-text="加载中"
-      element-loading-background="rgba(0, 0, 0, 0.8)" element-loading-spinner="el-icon-loading">
-        <el-table-column prop="id" label="职工编号" align="center"></el-table-column>
-        <el-table-column prop="name" label="职工姓名" align="center"></el-table-column>
-        <el-table-column prop="sex" label="性别" align="center"></el-table-column>
-        <el-table-column prop="phone" label="手机号码" align="center"></el-table-column>
-        <el-table-column prop="birth" label="生日" align="center"></el-table-column>
-        <el-table-column prop="stateName" label="职工状态" align="center"></el-table-column>
-        <el-table-column prop="typeName" label="所属类别" align="center"></el-table-column>
-        <el-table-column prop="joinUs" label="入职时间" align="center"></el-table-column>
-        <el-table-column label="操作" align="center">
-          <template slot-scope="scope">
-            <div style="display: flex;">
-              <div style="width: 100%;">
-                <el-button type="text" icon="el-icon-edit" @click="handleEdit(scope.row)">编辑</el-button>
+      <div class="table">
+        <el-table :data="dataList" border v-loading="tableLoading" element-loading-text="加载中" height="600"
+        element-loading-background="rgba(0, 0, 0, 0.8)" element-loading-spinner="el-icon-loading">
+          <el-table-column prop="id" label="职工编号" align="center"></el-table-column>
+          <el-table-column prop="name" label="职工姓名" align="center"></el-table-column>
+          <el-table-column prop="sex" label="性别" align="center"></el-table-column>
+          <el-table-column prop="phone" label="手机号码" align="center"></el-table-column>
+          <el-table-column prop="birth" label="生日" align="center"></el-table-column>
+          <el-table-column prop="stateName" label="职工状态" align="center"></el-table-column>
+          <el-table-column prop="typeName" label="所属类别" align="center"></el-table-column>
+          <el-table-column prop="joinUs" label="入职时间" align="center"></el-table-column>
+          <el-table-column label="操作" align="center">
+            <template slot-scope="scope">
+              <div style="display: flex;">
+                <div style="width: 100%;">
+                  <el-button type="text" icon="el-icon-edit" @click="handleEdit(scope.row)">编辑</el-button>
+                </div>
+                <div style="width: 100%;">
+                  <el-popconfirm title="是否删除此职工？" @confirm="handleDel(scope.row)">
+                    <el-button slot="reference" type="text" style="color: #e03131;" icon="el-icon-delete">删除</el-button>
+                  </el-popconfirm>
+                </div>
               </div>
-              <div style="width: 100%;">
-                <el-popconfirm title="是否删除此职工？" @confirm="handleDel(scope.row)">
-                  <el-button slot="reference" type="text" style="color: #e03131;" icon="el-icon-delete">删除</el-button>
-                </el-popconfirm>
-              </div>
-            </div>
-          </template>
-        </el-table-column>
-      </el-table>
-      <el-pagination
-      :total="total"
-      :page-size.sync="size"
-      :page-sizes="[10, 20, 50, 100, 200, 500]"
-      :current-page="current"
-      layout="total, sizes, prev, pager, next, jumper"
-      @current-change="handleCurrentChange"
-      ></el-pagination>
+            </template>
+          </el-table-column>
+        </el-table>
+        <el-pagination
+        :total="total"
+        :page-size.sync="size"
+        :page-sizes="[10, 20, 50, 100, 200, 500]"
+        :current-page.sync="current"
+        layout="total, sizes, prev, pager, next, jumper"
+        @current-change="handleCurrentChange"
+        ></el-pagination>
+      </div>
     </div>
 
     <el-dialog :visible.sync="dialog" title="职工管理" @close="beforeClose">
