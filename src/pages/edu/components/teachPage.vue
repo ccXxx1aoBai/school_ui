@@ -22,7 +22,7 @@
         </el-col>
       </el-row>
     </div>
-    <el-table :data="tableData" border v-loading="tableLoading" element-loading-text="加载中"
+    <el-table :data="tableData" border v-loading="tableLoading" element-loading-text="加载中" height="441"
       element-loading-background="rgba(0, 0, 0, 0.8)" element-loading-spinner="el-icon-loading">
       <el-table-column align="center">
         <template slot-scope="scope">
@@ -38,7 +38,7 @@
     :total="total"
     :page-size.sync="size"
     :page-sizes="[10, 20, 50, 100, 200, 500]"
-    :current-page="current"
+    :current-page.sync="current"
     layout="total, sizes, prev, pager, next, jumper"
     style="bottom: 80px;"
     ></el-pagination>
