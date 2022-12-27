@@ -32,6 +32,7 @@
               <el-col :span="6" :offset="1">
                 <el-button type="primary">查询</el-button>
                 <el-button type="primary" @click="dialog = !dialog">新增</el-button>
+                <el-button type="primary">自动排课</el-button>
               </el-col>
             </el-row>
           </div>

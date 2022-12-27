@@ -16,9 +16,56 @@
               <el-option v-for="item in majorList" :key="item.majorId" :value="item.majorId" :label="item.major"></el-option>
             </el-select>
           </el-col>
+          <el-col :span="3" :offset="1">
+            <el-button type="primary" @click="getStudentList(true)">查询</el-button>
+            <el-button type="primary">添加</el-button>
+          </el-col>
         </el-row>
       </div>
+      <div class="table">
+        <el-table :data="tableData" border v-loading="loading" element-loading-text="加载中" height="550"
+          element-loading-spinner="el-icon-loading" element-loading-background="rgba(0, 0, 0, 0.8)"
+          @row-dblclick="viewData">
+          <el-table-column label="学号" prop="id" align="center" width="160"></el-table-column>
+          <el-table-column label="姓名" prop="name" align="center" width="120"></el-table-column>
+          <el-table-column label="性别" prop="sex" align="center" width="100"></el-table-column>
+          <el-table-column label="学院" prop="dept" align="center" width="160"></el-table-column>
+          <el-table-column label="专业" prop="major" align="center" width="160"></el-table-column>
+          <el-table-column label="班级" prop="clazz" align="center" width="100"></el-table-column>
+          <el-table-column label="年级" prop="grade" align="center" width="100"></el-table-column>
+          <el-table-column label="手机号码" prop="phone" align="center" width="150"></el-table-column>
+          <el-table-column label="邮箱" prop="email" align="center" width="180"></el-table-column>
+          <el-table-column label="家庭住址" prop="address" align="center" width="250" show-overflow-tooltip></el-table-column>
+          <el-table-column label="操作" align="center" width="150" fixed="right">
+            <template slot-scope="scope">
+              <el-row>
+                <el-col :span="12">
+                  <el-button type="text" icon="el-icon-edit" disabled>编辑</el-button>
+                </el-col>
+                <el-col :span="12">
+                  <el-popconfirm title="是否删除此数据？" @confirm="handleDel(scope.row)">
+                    <el-button slot="reference" type="text" icon="el-icon-delete" class="err">删除</el-button>
+                  </el-popconfirm>
+                </el-col>
+              </el-row>
+            </template>
+          </el-table-column>
+        </el-table>
+        <el-pagination
+          :total="total"
+          :current-page.sync="current"
+          :page-size.sync="size"
+          :page-sizes="[10, 20, 50, 100, 200, 500]"
+          layout="total, sizes, prev, pager, next, jumper"></el-pagination>
+      </div>
     </div>
+
+    <el-dialog fullscreen :visible.sync="dialog" :show-close="false">
+      <div class="dialog-custom-body">
+        <el-page-header @back="dialog = false" content="学生档案"></el-page-header>
+        <Archives :data="student" />
+      </div>
+    </el-dialog>
   </div>
 </template>
 
@@ -27,33 +74,82 @@
   import {
     getDepartmentList
   } from '@/api/department'
+  import {
+    getStudent,
+    delStudent
+  } from '@/api/student'
+  import Archives from '@/components/archives.vue'
   export default {
-    name: '',
+    name: "",
+    components: { Archives },
     data() {
       return {
         deptList: [],
         majorList: [],
-        filterDept: '',
-        filterMajor: ''
+        filterDept: "",
+        filterMajor: "",
+        dialog: true,
+        student: {}
       }
     },
     mixins: [mixin],
+    watch: {
+      pagination(val) {
+        this.getStudentList(true)
+      }
+    },
     created() {
       getDepartmentList().then(res => {
-        console.log(res);
+        console.log(res)
         res.data.data.forEach(item => {
-          const {deptId, dept} = item
-          this.deptList.push({deptId, dept})
+          const { deptId, dept } = item
+          this.deptList.push({ deptId, dept })
           item.children.forEach(child => {
-            const {majorId, major} = child
-            this.majorList.push({majorId, major})
+            const { majorId, major } = child
+            this.majorList.push({ majorId, major })
           })
         })
       })
+      this.getStudentList(false)
+    },
+    methods: {
+      getStudentList(load) {
+        this.loading = load
+        const params = {
+          current: this.current,
+          size: this.size,
+          siftName: this.siftName,
+          deptId: this.filterDept,
+          majorId: this.filterMajor
+        }
+        getStudent(params).then(res => {
+          const { list, total } = res.data.data
+          this.tableData = list
+          this.total = total
+          this.loading = false
+        }).catch(() => {
+          this.loading = false
+        })
+      },
+      viewData(row, col, e) {
+        console.log(row)
+        this.dialog = true
+        this.student = row
+      },
+      handleDel(row) {
+        delStudent(row.id).then(res => {
+          if(res.data.code == 200) {
+            this.getStudentList(true)
+          }
+        })
+      }
     }
-  }
+}
 </script>
 
 <style lang="scss" scoped>
-  
+  .dialog-custom-body {
+    width: 50%;
+    margin: auto;
+  }
 </style>

@@ -26,6 +26,8 @@ const user = {
       commit('SET_UID', uid)
       commit('SET_USERNAME', username)
       commit('SET_AVATAR', avatar)
+      localStorage.setItem('username', username)
+      localStorage.setItem('avatar', avatar)
     },
     NOTICE_TOTAL: ({commit}, count) => {
       commit("SET_NOTICE_TOTAL", count)
