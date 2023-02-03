@@ -18,7 +18,7 @@
           </el-col>
           <el-col :span="3" :offset="1">
             <el-button type="primary" @click="getStudentList(true)">查询</el-button>
-            <el-button type="primary">添加</el-button>
+            <el-button type="primary" disabled>添加</el-button>
           </el-col>
         </el-row>
       </div>
@@ -88,7 +88,6 @@
         majorList: [],
         filterDept: "",
         filterMajor: "",
-        dialog: true,
         student: {}
       }
     },

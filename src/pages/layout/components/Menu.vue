@@ -1,9 +1,6 @@
 <template>
   <div>
-    <el-menu router background-color="#545c64"
-          text-color="#fff"
-          active-text-color="#ffd04b"
-          :default-active="activeIndex">
+    <el-menu router background-color="#545c64" text-color="#fff" active-text-color="#ffd04b" :default-active="activeIndex">
       <ChildrenMenu :menus="menus" />
     </el-menu>
   </div>
@@ -32,6 +29,16 @@ import ChildrenMenu from './ChildrenMenu.vue';
 }
 </script>
 
-<style lang="" scoped>
-  
+<style lang="scss" scoped>
+  ::v-deep .el-menu[role=menubar] {
+    height: calc(100vh - 70px) !important;
+    padding-bottom: 10px;
+    box-sizing: border-box;
+    overflow-y: auto !important;
+
+    &::-webkit-scrollbar {
+      width: 0;
+      height: 0;
+    }
+  }
 </style>

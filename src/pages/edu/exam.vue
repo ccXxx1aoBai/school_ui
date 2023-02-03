@@ -75,7 +75,7 @@
     },
     mixins: [mixin],
     methods: {
-      handleTreeClick(tree) {
+      handleTreeClick(tree, treeList, vm) {
         const arr = []
         if(tree.children && tree.children.length > 0) {
           tree.children.forEach(item => {
