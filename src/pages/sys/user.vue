@@ -13,8 +13,8 @@
               <el-input v-model="siftName" placeholder="用户名称" clearable ></el-input>
             </el-col>
             <el-col :span="5" :offset="1">
-              <el-button type="primary" icon="el-icon-search" @click="handleSelect">查询</el-button>
-              <el-button type="primary" icon="el-icon-printer">导出</el-button>
+              <el-button type="primary" icon="el-icon-search" @click="getList(true)">查询</el-button>
+              <el-button type="primary" icon="el-icon-printer" @click="handleExport('user')">导出</el-button>
             </el-col>
           </el-row>
         </div>
@@ -61,7 +61,7 @@
           <el-pagination 
           style="margin-top: 20px"
           :total="total"
-          :current-page="page"
+          :current-page="current"
           :page-size.sync="size"
           :page-sizes="[10, 20, 30, 50, 100]"
           @current-change="handlePageChange"
@@ -73,15 +73,20 @@
 </template>
 
 <script>
-import {getDepartmentList} from '@/api/department'
-import {getUserList} from '@/api/user'
-import {getRoleList} from '@/api/role'
+  import mixin from '@/mixin'
+  import {
+    getDepartmentList
+  } from '@/api/department'
+  import {
+    getUserList
+  } from '@/api/user'
+  import {
+    getRoleList
+  } from '@/api/role'
   export default {
     name: '',
     data() {
       return {
-        siftRole: '',
-        siftName: '',
         roleList: [],
         tree: [],
         selectTree: [],
@@ -89,17 +94,9 @@ import {getRoleList} from '@/api/role'
         tableData: [],
         roleName: '',
         edit: false,
-        total: 0,
-        page: 1,
-        size: 10
       }
     },
-    computed: {
-      pagination() {
-        const {page, size} = this
-        return {page, size}
-      }
-    },
+    mixins: [mixin],
     watch: {
       pagination(val) {
         this.getList(true, val.page, val.size, [])
@@ -117,9 +114,15 @@ import {getRoleList} from '@/api/role'
       })
     },
     methods: {
-      getList(load, page, size, classIds) {
+      getList(load) {
         this.tableLoading = load
-        getUserList({role: this.siftRole, name: this.siftName, current: page, size, classIds}).then(res => {
+        const params = {}
+        params.role = this.siftRole
+        params.name = this.siftName
+        params.current = this.current
+        params.size = this.size
+        params.classIds = this.siftRole
+        getUserList(params).then(res => {
           console.log(res);
           setTimeout(() => {
             const {total, list} = res.data.data
@@ -130,9 +133,6 @@ import {getRoleList} from '@/api/role'
         }).catch(err => {
           this.tableLoading = false
         })
-      },
-      handleSelect() {
-        this.getList(true, this.page, this.size, [])
       },
       handleChangeFinish(row) {
         if(this.edit) {

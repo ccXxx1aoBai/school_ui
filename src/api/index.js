@@ -59,3 +59,11 @@ export const getCount = () => {
     method: 'get'
   })
 }
+
+export const exportExcel = (type) => {
+  return request({
+    url: `/file/exportExcel/${type}`,
+    method: 'get',
+    responseType: 'blob'
+  })
+}
