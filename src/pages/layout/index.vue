@@ -7,7 +7,7 @@
             <img src="@/assets/icon.png">
             <span>智慧校园</span>
           </div>
-          <Menu :menus="$store.getters.menus" />
+          <Menu :menus="menus" />
         </el-aside>
         <el-main>
           <div class="header">
@@ -18,8 +18,8 @@
                   <el-breadcrumb-item>学生</el-breadcrumb-item>
                 </el-breadcrumb>
               </div>
-              <div class="tabs" v-if="items.length > 0">
-                <div class="tab-wrap">
+              <div class="tabs" v-if="items.length != 0">
+                <div class="tab-wrap" :style="{width: `${92 * items.length}px`}">
                   <div class="tab-item" v-for="(item, index) in items" :key="index"
                   :class="{'islink': item.name == curRouterName}">
                     <router-link class="tab-link" :to="item.path">
@@ -31,7 +31,7 @@
               </div>
             </div>
             <div style="display: flex;flex: 0 0 48px;justify-content: center;align-items: center;margin: 0 20px;">
-              <el-badge :value="count">
+              <el-badge :value="notice_total">
                 <el-button type="text" style="color: #333;">
                   <i class="el-icon-bell" style="font-size: 24px;" @click="drawer = !drawer"></i>
                 </el-button>
@@ -110,7 +110,8 @@
 </template>
 
 <script>
-import Menu from './components/Menu.vue';
+  import Menu from './components/Menu.vue'
+  import { mapGetters } from 'vuex'
   export default {
     components: { Menu },
     name: "",
@@ -123,12 +124,10 @@ import Menu from './components/Menu.vue';
       }
     },
     computed: {
+      ...mapGetters(['notice_total', 'menus']),
       curRouterName() {
         return this.$route.name
       },
-      count() {
-        return this.$store.getters.notice_total
-      }
     },
     watch: {
       $route(val) {
@@ -232,7 +231,24 @@ import Menu from './components/Menu.vue';
         }
 
         .tabs{
+          width: 1442px;
           margin: 10px 0;
+          overflow-x: auto;
+
+          &::-webkit-scrollbar {
+            width: 8px;
+            height: 8px;
+          }
+
+          &::-webkit-scrollbar-thumb {
+            background-color: #cccccc;
+            border-radius: 8px;
+          }
+
+          &::-webkit-scrollbar-track {
+            background-color: #f5f5f5;
+            border-radius: 8px;
+          }
         }
         .tab-wrap{
           display: flex;

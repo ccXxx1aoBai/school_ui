@@ -9,6 +9,8 @@ export default {
       siftType: '',
       siftDept: '',
       siftRole: '',
+      siftMajor: '',
+      siftClazz: '',
       deptList: [],
       loading: false,
       tableData: [{}],
@@ -26,7 +28,7 @@ export default {
   },
   watch: {
     pagination(val) {
-      this.getList(false)
+      this.getList(true)
     }
   },
   methods: {

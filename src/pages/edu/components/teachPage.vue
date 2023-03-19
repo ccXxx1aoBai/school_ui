@@ -10,15 +10,8 @@
             <el-option v-for="item in deptList" :key="item" :value="item"></el-option>
           </el-select>
         </el-col>
-        <el-col :span="3" :offset="1">
-          <el-select v-model="filterPos" placeholder="职位" clearable>
-            <el-option v-for="item in positionList" :key="item" :value="item"></el-option>
-          </el-select>
-        </el-col>
         <el-col :span="8" :offset="1">
           <el-button type="primary" @click="getList(true)">查询</el-button>
-          <el-button type="primary" @click="dialog = !dialog">新增</el-button>
-          <el-button type="primary">导出</el-button>
         </el-col>
       </el-row>
     </div>
@@ -30,9 +23,7 @@
         </template>
       </el-table-column>
       <el-table-column prop="name" label="姓名" align="center"></el-table-column>
-      <el-table-column prop="phone" label="手机号码" align="center"></el-table-column>
       <el-table-column prop="dept" label="所属学院" align="center"></el-table-column>
-      <el-table-column prop="position" label="职称" align="center"></el-table-column>
     </el-table>
     <el-pagination
     :total="total"

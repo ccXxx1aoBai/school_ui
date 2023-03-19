@@ -1,6 +1,6 @@
 import Vue from 'vue'
 import Vuex from 'vuex'
-import VuexAlong from 'vuex-along'
+import createVuexAlong from 'vuex-along'
 import user from './modules/user'
 import tools from './modules/tools'
 import getters from './getters'
@@ -13,11 +13,7 @@ const store = new Vuex.Store({
     tools,
   },
   getters,
-  // plugins: [VuexAlong({
-  //   name: 'along',
-  //   local: false,
-  //   session: {list: [], isFilter: true}
-  // })]
+  plugins: [createVuexAlong()]
 })
 
 export default store

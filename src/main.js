@@ -2,8 +2,8 @@ import Vue from 'vue'
 import App from './App.vue'
 import ElementUI from 'element-ui'
 import '@/assets/css/element-variables.scss'
-import router from './router'
-import store from './store'
+import router from '@/router'
+import store from '@/store'
 import { Notification } from 'element-ui'
 
 Vue.config.productionTip = false

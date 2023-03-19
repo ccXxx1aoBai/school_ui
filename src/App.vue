@@ -50,4 +50,16 @@ p,h1,h2,h3,h4,h5,h6{
 .err {
   color: #DA281F !important;
 }
+#nprogress .spinner {
+  display: none;
+  width: 0;
+  height: 0;
+}
+#nprogress .spinner-icon {
+  display: none;
+  width: 0;
+  height: 0;
+  animation: none;
+  -webkit-animation: none;
+}
 </style>

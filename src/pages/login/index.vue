@@ -29,9 +29,8 @@
 
 <script>
 import {geneCode, login} from '@/api'
-
+import AesUtils from '@/utils/AesUtils'
 export default {
-  name: '',
   data() {
     return {
       form: {
@@ -55,9 +54,6 @@ export default {
       src: ''
     }
   },
-  computed: {
-    
-  },
   created() {
     this.getCode()
   },
@@ -73,8 +69,9 @@ export default {
         if(valid) {
           login(this.form).then(res => {
             if(res) {
-              const {data} = res.data
+              const { data } = res.data
               res.headers.token && localStorage.setItem('token', res.headers.token)
+              sessionStorage.setItem('sign', AesUtils.encrypt(data.id))
               localStorage.setItem('uid', data.id)
               this.$store.dispatch('GetUserInfo', data)
               this.$router.push('/index')

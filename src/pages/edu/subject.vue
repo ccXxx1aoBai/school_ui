@@ -1,0 +1,234 @@
+<template>
+  <div>
+    <div class="wrap">
+      <div class="content">
+        <div class="tools">
+          <el-row>
+            <el-col :span="3">
+              <el-input v-model="siftClazz" placeholder="上课班级" clearable maxlength="30"></el-input>
+            </el-col>
+            <el-col :span="3" :offset="1">
+              <el-button icon="el-icon-search" type="primary">查询</el-button>
+              <el-button icon="el-icon-plus" type="primary" @click="dialog = true">新增</el-button>
+            </el-col>
+          </el-row>
+        </div>
+        <div class="table">
+          <el-table border stripe height="600" :data="tableData" size="mini" v-loading="loading"
+          element-loading-text="拼命加载中" element-loading-spinner="el-icon-loading"
+          element-loading-background="rgba(0, 0, 0, 0.8)">
+            <el-table-column align="center" prop="name" label="课程名称"></el-table-column>
+            <el-table-column align="center" prop="teacher" label="授课教师"></el-table-column>
+            <el-table-column align="center" prop="clazz" label="上课班级"></el-table-column>
+            <el-table-column align="center" prop="timeStr" label="上课时间(周)"></el-table-column>
+            <el-table-column align="center" label="操作">
+              <template slot-scope="scope">
+                <el-row>
+                  <el-col :span="6" :offset="6">
+                    <el-button type="text" icon="el-icon-edit" @click="handleEdit(scope.row)">编辑</el-button>
+                  </el-col>
+                  <el-col :span="4">
+                    <el-popconfirm title="是否删除此数据？" @confirm="handleDel(scope.row)">
+                      <el-button slot="reference" type="text" class="err" icon="el-icon-delete">删除</el-button>
+                    </el-popconfirm>
+                  </el-col>
+                </el-row>
+              </template>
+            </el-table-column>
+          </el-table>
+          <el-pagination
+          :total="total"
+          :page-size.sync="size"
+          :page-sizes="[10, 20, 50, 100, 200, 500]"
+          :current-page.sync="current"
+          layout="total, sizes, prev, pager, next, jumper"
+          ></el-pagination>
+        </div>
+      </div>
+    </div>
+    
+    <el-dialog :visible.sync="dialog" title="课程管理">
+      <el-form :model="form" :rules="rules" ref="form" label-width="100px" label-position="left">
+        <el-form-item prop="name" label="课程名称">
+          <el-input clearable type="textarea" :rows="3" placeholder="课程名称" v-model="form.name" maxlength="50"></el-input>
+        </el-form-item>
+        <el-form-item prop="teacher" label="授课教师">
+          <el-row>
+            <el-col :span="22">
+              <el-input clearable placeholder="授课教师" v-model="form.teacher" maxlength="20"></el-input>
+            </el-col>
+            <el-col :span="1" :offset="1">
+              <el-button type="text" @click="teachDialog = true">选</el-button>
+            </el-col>
+          </el-row>
+        </el-form-item>
+        <el-form-item prop="clazz" label="上课班级">
+          <el-row>
+            <el-col :span="22">
+              <el-input clearable placeholder="上课班级" v-model="form.clazz" maxlength="40"></el-input>
+            </el-col>
+            <el-col :span="1" :offset="1">
+              <el-button type="text" @click="clazzDialog = true">选</el-button>
+            </el-col>
+          </el-row>
+        </el-form-item>
+        <el-form-item prop="time" label="上课时间">
+          <el-select v-model="form.time" clearable placeholder="上课时间" multiple>
+            <el-option v-for="(item, index) in 20" :key="index" :value="item" :label="item"></el-option>
+          </el-select>
+        </el-form-item>
+      </el-form>
+      <div slot="footer">
+        <el-button type="primary" @click="handleSubmit">提交</el-button>
+      </div>
+    </el-dialog>
+
+    <!-- 选老师 -->
+    <el-dialog :visible.sync="teachDialog" title="选择授课教师">
+      <teachPage @selectTeacher="selectTeacher" />
+      <div slot="footer" style="margin-top: 40px;">
+        <el-button type="primary" @click="teachDialog = false">确定</el-button>
+      </div>
+    </el-dialog>
+
+    <!-- 选学生 -->
+    <el-dialog :visible.sync="clazzDialog" title="选择上课班级">
+      <clazzPage @selectClazz="selectClazz" />
+      <div slot="footer" style="margin-top: 40px;">
+        <el-button type="primary" @click="clazzDialog = false">确定</el-button>
+      </div>
+    </el-dialog>
+  </div>
+</template>
+
+<script>
+  import mixin from '@/mixin'
+  import {
+    getDepartmentList
+  } from '@/api/department'
+  import {
+    addSubject,
+    getSubjectList,
+    updateSubject,
+    delSubject
+  } from '@/api/subject'
+  import teachPage from '@/pages/edu/components/teachPage.vue'
+  import clazzPage from '@/pages/edu/components/clazzPage.vue'
+  export default {
+    components: {
+      teachPage,
+      clazzPage
+    },
+    data() {
+      return {
+        deptList: [],
+        form: {
+          id: '',
+          name: '',
+          teacherId: '',
+          teacher: '',
+          clazz: '',
+          time: [],
+          timeStr: ''
+        },
+        rules: {
+          name: [
+            { required: true, message: '请输入课程名称' }
+          ],
+          teacher: [
+            { required: true, message: '请选择授课教师' }
+          ],
+          clazz: [
+            { required: true, message: '请选择上课班级' }
+          ],
+          time: [
+            { required: true, message: '请选择上课时间' }
+          ]
+        },
+        teachDialog: false,
+        clazzDialog: false,
+        type: '0'
+      }
+    },
+    mixins: [mixin],
+    created() {
+      this.getList(false)
+    },
+    methods: {
+      selectTeacher(row) {
+        this.form.teacherId = row.id
+        this.form.teacher = row.name
+      },
+      selectClazz(row) {
+        console.log(row);
+        let clazzs = ''
+        row.forEach(item => {
+          clazzs += item.name + ','
+        })
+        this.$set(this.form, 'clazz', clazzs.substring(0, clazzs.length - 1))
+      },
+      handleSubmit() {
+        this.$refs.form.validate(valid => {
+          if(valid) {
+            this.form.timeStr = this.form.time.toString()
+            if((this.form.id ?? '') == '') {
+              addSubject(this.form).then(res => {
+                if(res.data.code === 200) {
+                  this.getList(true)
+                  this.$refs.form.resetFields()
+                }
+              })
+            }else {
+              updateSubject(this.form).then(res => {
+                if(res.data.code === 200) {
+                  this.getList(true)
+                  this.$refs.form.resetFields()
+                  this.dialog = false
+                }
+              })
+            }
+          }
+        })
+      },
+      getList(load) {
+        this.loading = load
+        const params = {}
+        params.size = this.size
+        params.current = this.current
+        params.siftClazz = this.siftClazz
+        getSubjectList(params).then(res => {
+          this.loading = false
+          const { code, data } = res.data
+          if(code === 200) {
+            this.total = data.total
+            this.tableData = data.list
+          }
+        }).catch(err => {
+          this.loading = false
+        })
+      },
+      handleEdit(row) {
+        this.dialog = true
+        this.$nextTick(() => {
+          Object.keys(row).forEach(key => {
+            this.$set(this.form, key, row[key])
+          })
+          this.$set(this.form, 'time', row.timeStr.split(','))
+        })
+      },
+      handleDel(row) {
+        delSubject(row.id).then(res => {
+          if(res.data.code === 200) {
+            this.getList(true)
+          }
+        })
+      }
+    }
+  }
+</script>
+
+<style lang="scss" scoped>
+  .el-form {
+    width: 400px;
+  }
+</style>

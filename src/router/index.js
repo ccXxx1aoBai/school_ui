@@ -3,6 +3,7 @@ import Router from 'vue-router'
 import store from '../store'
 import NProgress from 'nprogress'
 import 'nprogress/nprogress.css'
+import AesUtils from '@/utils/AesUtils'
 
 Vue.use(Router)
 
@@ -48,29 +49,33 @@ const router = new Router({
 router.beforeEach((to, from, next) => {
   NProgress.start()
   console.log(localStorage.getItem('token'));
-  if(localStorage.getItem('token')) {
-    if(to.path == '/' || to.path == '/login') {
+  if(to.path != '/' && to.path != '/login') {
+    if(!localStorage.getItem('token')) {
       localStorage.clear()
       next({path: '/login'})
     }else {
-      if(store.getters.routes.length == 0) {
-        store.dispatch("GetRoutes", store.getters.uid).then(routeList => {
-          routeList.map(route => {
-            router.addRoute('Layout', route)
+      console.log(11, sessionStorage.getItem('sign'));
+      if(sessionStorage.getItem('sign') && AesUtils.decrypt(sessionStorage.getItem('sign')) == store.getters.uid) {
+        if(router.getRoutes().length < 4) {
+          store.dispatch("GetRoutes", store.getters.uid).then(routeList => {
+            routeList.forEach(route => {
+              router.addRoute('Layout', route)
+            })
+            // hack方法 确保addRoutes已完成
+            // 解决页面刷新路由丢失
+            next({...to, replace: true})
           })
-          // hack方法 确保addRoutes已完成
-          // 解决页面刷新路由丢失
-          next({...to, replace: true})
-        })
-      }else {
-        if(to.path == '/index') {
-          next(store.getters.routes[0].path)
         }else {
-          next()
+          if(to.path == '/index') {
+            next(store.getters.routes[0].path)
+          }else {
+            next()
+          }
         }
+      }else {
+        next('/login')
       }
     }
-    
   }else {
     next()
   }
