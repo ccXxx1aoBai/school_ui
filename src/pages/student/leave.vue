@@ -14,10 +14,11 @@
             <el-table-column prop="day" label="请假天数" align="center"></el-table-column>
             <el-table-column prop="reason" label="原因" align="center"></el-table-column>
             <el-table-column prop="createTime" label="创建时间" align="center"></el-table-column>
-            <el-table-column prop="flow" label="当前节点" align="center"></el-table-column>
+            <el-table-column prop="flowLabel" label="当前节点" align="center"></el-table-column>
             <el-table-column label="操作" align="center">
               <template slot-scope="scope">
-                <el-button type="text" icon="el-icon-view">详情</el-button>
+                <el-button type="text" icon="el-icon-view" @click="handleDetail(scope.row)">详情</el-button>
+                <el-button type="text" icon="el-icon-edit" @click="handleEdit(scope.row)"></el-button>
                 <el-button type="text" icon="el-icon-delete" class="warn" @click="handleCancel(scope.row)">流程取消</el-button>
               </template>
             </el-table-column>
@@ -25,8 +26,8 @@
         </div>
       </div>
     </div>
-    <el-dialog :visible.sync="dialog" title="请假">
-      <el-form :model="form" :rules="rules" ref="form" label-width="100px" label-position="left">
+    <el-dialog :visible.sync="dialog" title="请假" @close="beforeClose()">
+      <el-form :model="form" :rules="rules" ref="form" label-width="100px" label-position="left" :disabled="isRead">
         <el-form-item prop="id" label="假条编号">
           <span>{{ form.name }}</span>
         </el-form-item>
@@ -43,6 +44,21 @@
           <el-input type="textarea" placeholder="请假原因" v-model="form.reason" maxlength="200" :rows="4"></el-input>
         </el-form-item>
       </el-form>
+      <div v-if="flows.length != 0">
+        <p style="padding-bottom: 20px;font-size: 24px;">审批流程</p>
+        <el-steps direction="vertical" :active="active" :space="80" process-status="wait"
+        finish-status="success">
+          <el-step v-for="(item, index) in flows" :key="index" :title="item.name" :description="item.opinion">
+            <div slot="description">
+              <p v-if="item.nodeCode != '4'">
+                <span v-if="item.result">审批结果：{{ item.result }}</span>
+                <span v-if="item.opinion">审批意见：{{ item.opinion }}</span>
+              </p>
+              <p>{{ item.createTime }}</p>
+            </div>
+          </el-step>
+        </el-steps>
+      </div >
       <div slot="footer">
         <el-button type="primary" @click="handleSubmit">提交</el-button>
       </div>
@@ -57,6 +73,9 @@
     addLeave,
     getLeaveList
   } from '@/api/leave'
+  import {
+    setFlow
+  } from '@/utils/flow'
   export default {
     data() {
       return {
@@ -77,12 +96,24 @@
           reason: [
             { required: true, message: '请输入请假原因' }
           ]
-        }
+        },
+        isRead: false,
+        flows: [],
+        active: 0
       }
     },
     mixins: [mixin],
     computed: {
       ...mapGetters(['uid'])
+    },
+    watch: {
+      dialog(val) {
+        if(val && !this.isRead) {
+          if(!this.form.name) {
+            this.geneId()
+          }
+        }
+      }
     },
     created() {
       this.getList(false)
@@ -112,6 +143,31 @@
             this.tableData = data.list
           }
         })
+      },
+      handleDetail(row) {
+        this.dialog = true
+        this.isRead = true
+        this.$nextTick(() => {
+          Object.keys(row).forEach(key => {
+            this.$set(this.form, key, row[key])
+          })
+          this.active = row.approveList ? row.approveList.length : 0
+          this.flows = setFlow(row.approveList, row.leaveType)
+        })
+      },
+      handleEdit(row) {
+        this.dialog = true
+        this.$nextTick(() => {
+          Object.keys(row).forEach(key => {
+            this.$set(this.form, key, row[key])
+          })
+        })
+      },
+      geneId() {
+        this.form.name = `JT${this.uid}-${new Date().getTime()}`
+      },
+      beforeClose() {
+        this.isRead = false
       }
     }
   }
@@ -120,5 +176,11 @@
 <style lang="scss" scoped>
   .el-form {
     width: 400px;
+  }
+
+  ::v-deep .el-dialog {
+    margin: 0 auto !important;
+    top: 50%;
+    transform: translateY(-50%);
   }
 </style>

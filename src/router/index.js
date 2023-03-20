@@ -48,13 +48,11 @@ const router = new Router({
 
 router.beforeEach((to, from, next) => {
   NProgress.start()
-  console.log(localStorage.getItem('token'));
   if(to.path != '/' && to.path != '/login') {
     if(!localStorage.getItem('token')) {
       localStorage.clear()
       next({path: '/login'})
     }else {
-      console.log(11, sessionStorage.getItem('sign'));
       if(sessionStorage.getItem('sign') && AesUtils.decrypt(sessionStorage.getItem('sign')) == store.getters.uid) {
         if(router.getRoutes().length < 4) {
           store.dispatch("GetRoutes", store.getters.uid).then(routeList => {
