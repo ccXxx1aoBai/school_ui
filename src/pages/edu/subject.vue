@@ -20,6 +20,7 @@
             <el-table-column align="center" prop="name" label="课程名称"></el-table-column>
             <el-table-column align="center" prop="teacher" label="授课教师"></el-table-column>
             <el-table-column align="center" prop="clazz" label="上课班级"></el-table-column>
+            <el-table-column align="center" prop="duration" label="课时"></el-table-column>
             <el-table-column align="center" prop="timeStr" label="上课时间(周)"></el-table-column>
             <el-table-column align="center" label="操作">
               <template slot-scope="scope">

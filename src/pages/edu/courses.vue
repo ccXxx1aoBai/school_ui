@@ -30,9 +30,8 @@
                 </el-select>
               </el-col>
               <el-col :span="6" :offset="1">
-                <el-button type="primary">查询</el-button>
-                <el-button type="primary" @click="dialog = !dialog">新增</el-button>
-                <el-button type="primary">自动排课</el-button>
+                <el-button type="primary" icon="el-icon-search">查询</el-button>
+                <el-button type="primary" icon="el-icon-date" @click="dialog = !dialog">排课</el-button>
               </el-col>
             </el-row>
           </div>
@@ -53,6 +52,12 @@
                 </template>
               </el-table-column>
             </el-table>
+            <el-pagination
+            :total="total"
+            :current-page.sync="current"
+            :page-size.sync="size"
+            :page-sizes="[10, 20, 50, 100, 300, 500]"
+            layout="total, sizes, prev, pager, next, jumper"></el-pagination>
           </div>
         </div>
       </div>
@@ -170,7 +175,7 @@
     },
     data() {
       return {
-        init: true,
+        init: false,
         form: {
           id: '',
           name: '',
