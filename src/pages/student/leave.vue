@@ -18,11 +18,15 @@
             <el-table-column label="操作" align="center">
               <template slot-scope="scope">
                 <el-button type="text" icon="el-icon-view" @click="handleDetail(scope.row)">详情</el-button>
-                <el-button type="text" icon="el-icon-edit" @click="handleEdit(scope.row)"></el-button>
-                <el-button type="text" icon="el-icon-delete" class="warn" @click="handleCancel(scope.row)">流程取消</el-button>
               </template>
             </el-table-column>
           </el-table>
+          <el-pagination
+          :total="total"
+          :current-page.sync="current"
+          :page-size.sync="size"
+          :page-sizes="[10, 20, 50, 100, 300, 500]"
+          layout="total, sizes, prev, pager, next, jumper"></el-pagination>
         </div>
       </div>
     </div>
@@ -76,6 +80,7 @@
   import {
     setFlow
   } from '@/utils/flow'
+  import moment from 'moment'
   export default {
     data() {
       return {
@@ -136,7 +141,7 @@
       },
       getList(load) {
         this.loading = load
-        getLeaveList(this.uid).then(res => {
+        getLeaveList(this.uid, this.current, this.size).then(res => {
           const { code, data } = res.data
           if(code === 200) {
             this.total = data.total
@@ -164,7 +169,7 @@
         })
       },
       geneId() {
-        this.form.name = `JT${this.uid}-${new Date().getTime()}`
+        this.form.name = `JT${moment(new Date()).format('yyyyMMddHHmmss')}`
       },
       beforeClose() {
         this.isRead = false
