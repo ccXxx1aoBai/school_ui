@@ -16,7 +16,7 @@ export default {
       tableData: [{}],
       total: 0,
       current: 1,
-      size: 10,
+      size: 20,
       dialog: false
     }
   },

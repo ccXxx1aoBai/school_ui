@@ -5,10 +5,13 @@
         <div class="tools">
           <el-row>
             <el-col :span="3">
+              <el-input v-model="siftName" placeholder="课程名称" clearable maxlength="30"></el-input>
+            </el-col>
+            <el-col :span="3" :offset="1">
               <el-input v-model="siftClazz" placeholder="上课班级" clearable maxlength="30"></el-input>
             </el-col>
             <el-col :span="3" :offset="1">
-              <el-button icon="el-icon-search" type="primary">查询</el-button>
+              <el-button icon="el-icon-search" type="primary" @click="getList(true)">查询</el-button>
               <el-button icon="el-icon-plus" type="primary" @click="dialog = true">新增</el-button>
             </el-col>
           </el-row>
@@ -197,6 +200,7 @@
         params.size = this.size
         params.current = this.current
         params.siftClazz = this.siftClazz
+        params.siftName = this.siftName
         getSubjectList(params).then(res => {
           this.loading = false
           const { code, data } = res.data

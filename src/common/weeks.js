@@ -1,16 +1,3 @@
-const dateType = [
-  {
-    value: '0',
-    label: '全部'
-  },{
-    value: '1',
-    label: '单周',
-  },{
-    value: '2',
-    label: '双周',
-  }
-]
-
 const weeks = [
   {
     value: '1',
@@ -59,8 +46,4 @@ weeks.map(week => {
   week.children = date
 })
 
-dateType.map(dat => {
-  dat.children = weeks
-})
-
-export default dateType
+export default weeks
