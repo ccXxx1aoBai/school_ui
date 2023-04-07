@@ -1,5 +1,6 @@
 <template>
   <div class="login">
+    <div class="header_title"></div>
     <div class="wrap">
       <div class="form">
         <el-form :model="form" :rules="rules" ref="form">
@@ -68,13 +69,22 @@ export default {
       this.$refs.form.validate(valid => {
         if(valid) {
           login(this.form).then(res => {
+            console.log(res);
             if(res) {
               const { data } = res.data
-              res.headers.token && localStorage.setItem('token', res.headers.token)
-              sessionStorage.setItem('sign', AesUtils.encrypt(data.id))
-              localStorage.setItem('uid', data.id)
-              this.$store.dispatch('GetUserInfo', data)
-              this.$router.push('/index')
+              if(data.state_code == '0') {
+                return
+              }
+              if(data.state_code == '1') {
+                console.log(1111111111);
+                this.$router.push('/register')
+              }else {
+                res.headers.token && localStorage.setItem('token', res.headers.token)
+                sessionStorage.setItem('sign', AesUtils.encrypt(data.id))
+                localStorage.setItem('uid', data.id)
+                this.$store.dispatch('GetUserInfo', data)
+                this.$router.push('/index')
+              }
             }
           })
         }
@@ -93,6 +103,34 @@ export default {
   background-position: center center;
   background-size: auto 100%;
   background-repeat: no-repeat;
+
+  .header_title {
+    position: absolute;
+    top: 20px;
+    left: 50px;
+    display: flex;
+    align-items: center;
+    
+    &::before {
+      content: "";
+      display: inline-block;
+      width: 310px;
+      height: 70px;
+      background-image: url('@/assets/title_logo.png');
+      background-size: 100% 100%;
+      background-repeat: no-repeat;
+      background-position: 0 0;
+      margin: 10px 10px 0 0;
+    }
+
+    &::after {
+      content: "教务系统";
+      margin: 10px 0 0 20px;
+      color: #ffffff;
+      font-size: 32px;
+      letter-spacing: 4px;
+    }
+  }
 
   .wrap{
     position: absolute;

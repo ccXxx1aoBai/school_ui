@@ -35,6 +35,10 @@ const routes = [
     name: 'Login',
     component: () => import('@/pages/login')
   },{
+    path: '/register',
+    name: 'Register',
+    component: () => import('@/pages/student/register')
+  },{
     path: '/index',
     name: 'Layout',
     component: () => import('@/pages/layout'),
@@ -48,13 +52,13 @@ const router = new Router({
 
 router.beforeEach((to, from, next) => {
   NProgress.start()
-  if(to.path != '/' && to.path != '/login') {
+  if(to.path != '/' && to.path != '/login' && to.path != '/register') {
     if(!localStorage.getItem('token')) {
       localStorage.clear()
       next({path: '/login'})
     }else {
       if(sessionStorage.getItem('sign') && AesUtils.decrypt(sessionStorage.getItem('sign')) == store.getters.uid) {
-        if(router.getRoutes().length < 4) {
+        if(router.getRoutes().length < 5) {
           store.dispatch("GetRoutes", store.getters.uid).then(routeList => {
             routeList.forEach(route => {
               router.addRoute('Layout', route)
