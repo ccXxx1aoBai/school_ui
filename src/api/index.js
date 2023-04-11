@@ -67,3 +67,14 @@ export const exportExcel = (type) => {
     responseType: 'blob'
   })
 }
+
+export const importData = (data) => {
+  return request({
+    headers: {
+      'Content-Type': 'multipart/form-data'
+    },
+    url: '/file/importData',
+    method: 'post',
+    data
+  })
+}

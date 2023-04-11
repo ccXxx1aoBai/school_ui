@@ -23,15 +23,15 @@
           </el-col>
         </el-row>
       </div>
-      <el-table :data="tableData" border v-loading="tableLoading" element-loading-text="加载中"
+      <el-table :data="tableData" border v-loading="loading" element-loading-text="加载中" height="660"
       element-loading-background="rgba(0, 0, 0, 0.8)" element-loading-spinner="el-icon-loading">
         <el-table-column prop="id" label="职工编号" align="center"></el-table-column>
         <el-table-column prop="name" label="姓名" align="center"></el-table-column>
         <el-table-column prop="sex" label="性别" align="center"></el-table-column>
         <el-table-column prop="birth" label="生日" align="center"></el-table-column>
         <el-table-column prop="phone" label="手机号码" align="center"></el-table-column>
+        <el-table-column prop="email" label="邮箱" align="center"></el-table-column>
         <el-table-column prop="dept" label="所属学院" align="center"></el-table-column>
-        <el-table-column prop="position" label="职称" align="center"></el-table-column>
         <el-table-column prop="joinUs" label="入职时间" align="center"></el-table-column>
         <el-table-column label="操作" align="center">
           <div style="display: flex;" slot-scope="scope">
@@ -113,6 +113,7 @@
 </template>
 
 <script>
+  import mixin from '@/mixin'
   import {
     getDepartmentList
   } from '@/api/department'
@@ -133,12 +134,6 @@
         filterDept: '',
         filterPos: '',
         deptList: [],
-        tableLoading: false,
-        tableData: [],
-        total: 0,
-        size: 10,
-        current: 1,
-        dialog: false,
         positionList: [],
         teacherForm: {
           id: '',
@@ -156,17 +151,7 @@
         }
       }
     },
-    computed: {
-      pagination() {
-        const {current, size} = this
-        return {current, size} 
-      }
-    },
-    watch: {
-      pagination() {
-        this.getList(true)
-      }
-    },
+    mixins: [mixin],
     created() {
       getDepartmentList().then(res => {
         res.data.data.forEach(item => {
@@ -180,7 +165,7 @@
     },
     methods: {
       getList(load) {
-        this.tableLoading = load
+        this.loading = load
         const params = {
           current: this.current,
           size: this.size,
@@ -189,12 +174,12 @@
           position: this.filterPos
         }
         getTeacherList(params).then(res => {
-          this.tableLoading = false
+          this.loading = false
           const {total, list} = res.data.data
           this.tableData = list
           this.total = total
         }).catch(() => {
-          this.tableLoading = false
+          this.loading = false
         })
       },
       handleEdit(row) {

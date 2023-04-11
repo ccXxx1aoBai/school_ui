@@ -75,14 +75,12 @@ export default {
               if(data.state_code == '0') {
                 return
               }
+              this.$store.dispatch('GetUserInfo', data)
               if(data.state_code == '1') {
-                console.log(1111111111);
                 this.$router.push('/register')
               }else {
                 res.headers.token && localStorage.setItem('token', res.headers.token)
                 sessionStorage.setItem('sign', AesUtils.encrypt(data.id))
-                localStorage.setItem('uid', data.id)
-                this.$store.dispatch('GetUserInfo', data)
                 this.$router.push('/index')
               }
             }

@@ -16,26 +16,30 @@
               <el-option v-for="item in majorList" :key="item.majorId" :value="item.majorId" :label="item.major"></el-option>
             </el-select>
           </el-col>
-          <el-col :span="3" :offset="1">
-            <el-button type="primary" @click="getStudentList(true)">查询</el-button>
-            <el-button type="primary" disabled>添加</el-button>
+          <el-col :span="5" :offset="1">
+            <el-button type="primary" @click="getList(true)" icon="el-icon-search">查询</el-button>
+            <el-button type="primary" @click="dialog = true" icon="el-icon-upload">导入</el-button>
+            <el-button type="primary" @click="handleExport('student')" icon="el-icon-folder">导出</el-button>
           </el-col>
         </el-row>
       </div>
       <div class="table">
-        <el-table :data="tableData" border v-loading="loading" element-loading-text="加载中" height="550"
-          element-loading-spinner="el-icon-loading" element-loading-background="rgba(0, 0, 0, 0.8)"
-          @row-dblclick="viewData">
+        <el-table :data="tableData" border v-loading="loading" element-loading-text="加载中" height="660"
+          element-loading-spinner="el-icon-loading" element-loading-background="rgba(0, 0, 0, 0.8)">
           <el-table-column label="学号" prop="id" align="center" width="160"></el-table-column>
           <el-table-column label="姓名" prop="name" align="center" width="120"></el-table-column>
-          <el-table-column label="性别" prop="sex" align="center" width="100"></el-table-column>
-          <el-table-column label="学院" prop="dept" align="center" width="160"></el-table-column>
-          <el-table-column label="专业" prop="major" align="center" width="160"></el-table-column>
-          <el-table-column label="班级" prop="clazz" align="center" width="100"></el-table-column>
+          <el-table-column label="性别" prop="sex" align="center" width="100">
+            <template slot-scope="scope">
+              {{ scope.row.sex == '1' ? '男' : '女' }}
+            </template>
+          </el-table-column>
+          <el-table-column label="学院" prop="dept" align="center" width="140" show-overflow-tooltip></el-table-column>
+          <el-table-column label="专业" prop="major" align="center" width="140" show-overflow-tooltip></el-table-column>
+          <el-table-column label="班级" prop="clazz" align="center" width="90"></el-table-column>
           <el-table-column label="年级" prop="grade" align="center" width="100"></el-table-column>
           <el-table-column label="手机号码" prop="phone" align="center" width="150"></el-table-column>
           <el-table-column label="邮箱" prop="email" align="center" width="180"></el-table-column>
-          <el-table-column label="家庭住址" prop="address" align="center" width="250" show-overflow-tooltip></el-table-column>
+          <el-table-column label="家庭住址" prop="address" align="center" width="280" show-overflow-tooltip></el-table-column>
           <el-table-column label="操作" align="center" width="150" fixed="right">
             <template slot-scope="scope">
               <el-row>
@@ -60,11 +64,19 @@
       </div>
     </div>
 
-    <el-dialog fullscreen :visible.sync="dialog" :show-close="false">
-      <div class="dialog-custom-body">
-        <el-page-header @back="dialog = false" content="学生档案"></el-page-header>
-        <Archives :data="student" />
-      </div>
+    <el-dialog :visible.sync="dialog" title="学生信息导入">
+      <el-upload
+        class="upload-demo"
+        drag
+        action="#"
+        accept=".xls,.xlsx"
+        :auto-upload="false"
+        :show-file-list="false"
+        :on-change="beforeUpload">
+        <i class="el-icon-upload"></i>
+        <div class="el-upload__text">将文件拖到此处，或<em>点击上传</em></div>
+        <div class="el-upload__tip" slot="tip">只能上传.xls、.xlsx文件</div>
+      </el-upload>
     </el-dialog>
   </div>
 </template>
@@ -79,8 +91,11 @@
     delStudent
   } from '@/api/student'
   import Archives from '@/components/archives.vue'
+  import { 
+    importData,
+  } from '@/api'
+  import { mapGetters } from 'vuex'
   export default {
-    name: "",
     components: { Archives },
     data() {
       return {
@@ -88,14 +103,12 @@
         majorList: [],
         filterDept: "",
         filterMajor: "",
-        student: {}
+        student: {},
       }
     },
     mixins: [mixin],
-    watch: {
-      pagination(val) {
-        this.getStudentList(true)
-      }
+    computed: {
+      ...mapGetters(['uid'])
     },
     created() {
       getDepartmentList().then(res => {
@@ -109,10 +122,24 @@
           })
         })
       })
-      this.getStudentList(false)
+      this.getList(false)
     },
     methods: {
-      getStudentList(load) {
+      beforeUpload(file) {
+        const type = ["application/vnd.ms-excel", "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"]
+        if(!type.includes(file.raw.type)) {
+          this.$message.error("文件格式错误")
+          return false
+        }
+        this.$fullLoading.load()
+        importData({ file: file.raw, uid: this.uid, type: 'student' }).then(res => {
+          if(res.data.code === 200) {
+            this.$fullLoading.close()
+            this.getList(false)
+          }
+        })
+      },
+      getList(load) {
         this.loading = load
         const params = {
           current: this.current,
@@ -130,18 +157,13 @@
           this.loading = false
         })
       },
-      viewData(row, col, e) {
-        console.log(row)
-        this.dialog = true
-        this.student = row
-      },
       handleDel(row) {
         delStudent(row.id).then(res => {
           if(res.data.code == 200) {
-            this.getStudentList(true)
+            this.getList(true)
           }
         })
-      }
+      },
     }
 }
 </script>

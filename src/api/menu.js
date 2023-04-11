@@ -16,7 +16,7 @@ export const getMenuList = (data) => {
     params.append(key, data[key])
   })
   return request({
-    url: '/menu',
+    url: '/menu/all',
     method: 'get',
     params
   })

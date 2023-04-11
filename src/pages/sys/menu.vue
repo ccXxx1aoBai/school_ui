@@ -124,8 +124,16 @@
 </template>
 
 <script>
-  import {getMenuList, updateMenu, addMenu, delMenu, lockMenu} from '@/api/menu'
-  import {getRoleOption} from '@/api/role'
+  import {
+    getMenuList,
+    updateMenu,
+    addMenu,
+    delMenu,
+    lockMenu
+  } from '@/api/menu'
+  import {
+    getRoleOption
+  } from '@/api/role'
   import icons from '@/utils/icons'
   export default {
     name: '',
@@ -184,11 +192,10 @@
     methods: {
       getList(load) {
         this.loading = load
-        getMenuList({current: this.page, size: this.size, name: this.siftName}).then(res => {
-          console.log(res);
-          const {total, list} = res.data.data
-          this.total = total
-          this.tableData = list
+        getMenuList({}).then(res => {
+          console.log(res.data);
+          this.tableData = res.data.data
+          this.total = res.data.data.length
           this.loading = false
         }).catch(err => {
           this.loading = false

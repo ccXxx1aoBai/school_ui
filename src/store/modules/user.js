@@ -42,7 +42,7 @@ const user = {
       state.roleId = data
     },
     SET_SEX: (state, data) => {
-      state.uid = data
+      state.sex = data
     },
     SET_DEPTID: (state, data) => {
       state.deptId = data
@@ -51,34 +51,34 @@ const user = {
       state.dept = data
     },
     SET_MAJORID: (state, data) => {
-      state.name = data
+      state.majorId = data
     },
     SET_MAJOR: (state, data) => {
-      state.create_time = data
+      state.major = data
     },
     SET_CLAZZ: (state, data) => {
-      state.roleId = data
+      state.clazz = data
     },
     SET_TEACHERID: (state, data) => {
-      state.deptId = data
+      state.teacherId = data
     },
     SET_TEACHER: (state, data) => {
-      state.dept = data
+      state.teacher = data
     },
     SET_BIRTH: (state, data) => {
-      state.name = data
+      state.birth = data
     },
     SET_NATION: (state, data) => {
-      state.create_time = data
+      state.nation = data
     },
     SET_POSITION: (state, data) => {
-      state.roleId = data
+      state.position = data
     },
     SET_AREA: (state, data) => {
-      state.create_time = data
+      state.area = data
     },
     SET_ADDRESS: (state, data) => {
-      state.roleId = data
+      state.address = data
     },
     SET_NOTICE_TOTAL: (state, data) => {
       state.notice_total += data
@@ -87,20 +87,21 @@ const user = {
 
   actions: {
     GetUserInfo: ({ commit }, data) => {
+      console.log(data);
       const { 
         id: uid,
         username,
-        roleId,
+        role_id: roleId,
         create_time,
         avatar,
         name,
         sex,
-        deptId,
+        dept_id: deptId,
         dept,
-        majorId,
+        major_id: majorId,
         major,
         clazz,
-        teacherId,
+        teacher_id: teacherId,
         teacher,
         birth,
         nation,

@@ -24,7 +24,6 @@
             <el-table-column label="操作" align="center" width="300">
               <template slot-scope="scope">
                 <div class="customBtn">
-                  <el-button type="text" icon="el-icon-edit" @click="handleEdit(scope.row)">编辑</el-button>
                   <el-popconfirm title="是否删除该角色？" @confirm="handleDel(scope.row)">
                     <el-button style="color: #DA281F" type="text" icon="el-icon-delete" slot="reference">删除</el-button>
                   </el-popconfirm>
@@ -49,7 +48,7 @@
                 <el-input v-model="roleForm.role" clearable placeholder="权限标识" maxlength="20"></el-input>
               </el-col>
               <el-col :span="1" :offset="1">
-                <el-tooltip content="多个身份以“,”分隔">
+                <el-tooltip content="角色身份，一般为大小英文单词">
                   <i class="el-icon-info"></i>
                 </el-tooltip>
               </el-col>
@@ -57,16 +56,6 @@
           </el-form-item>
           <el-form-item label="角色名称" prop="name">
             <el-input v-model="roleForm.name" clearable placeholder="角色名称" maxlength="20"></el-input>
-          </el-form-item>
-          <el-form-item label="菜单权限" prop="menus">
-            <el-tree 
-            node-key="id"
-            ref="tree"
-            show-checkbox
-            :data="menuTree"
-            :expand-on-click-node="false" 
-            :render-after-expand="false"
-            @check-change="handleTreeClick"></el-tree>
           </el-form-item>
         </el-form>
       </div>
@@ -122,14 +111,6 @@ import { getRoleList, updateRoleInfo, addRole, delRole } from '@/api/role'
         }).catch(err => {
           this.tableLoading = false
           this.$fullLoading.close()
-        })
-      },
-      handleEdit(row) {
-        this.dialog = !this.dialog
-        this.$nextTick(() => {
-          Object.keys(row).forEach(key => {
-            this.$set(this.roleForm, key, row[key])
-          })
         })
       },
       handleDel(row) {

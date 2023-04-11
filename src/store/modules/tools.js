@@ -1,4 +1,5 @@
 import {getRoutes} from '@/api/menu'
+import store from '@/store'
 
 const tools = {
   state: {
@@ -32,7 +33,7 @@ const tools = {
     },
     GetRoutes: ({commit, dispatch}, data) => {
       return new Promise(resolve => {
-        getRoutes(localStorage.getItem('uid')).then(res => {
+        getRoutes(store.getters.uid).then(res => {
           const menus = formatRoutes(res.data.data)
           commit('SET_MENU', menus)
           const routes = []

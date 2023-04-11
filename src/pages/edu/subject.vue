@@ -10,9 +10,10 @@
             <el-col :span="3" :offset="1">
               <el-input v-model="siftClazz" placeholder="上课班级" clearable maxlength="30"></el-input>
             </el-col>
-            <el-col :span="3" :offset="1">
+            <el-col :span="4" :offset="1">
               <el-button icon="el-icon-search" type="primary" @click="getList(true)">查询</el-button>
               <el-button icon="el-icon-plus" type="primary" @click="dialog = true">新增</el-button>
+              <el-button icon="el-icon-upload" type="primary" @click="importDialog = true">导入</el-button>
             </el-col>
           </el-row>
         </div>
@@ -23,6 +24,7 @@
             <el-table-column align="center" prop="name" label="课程名称"></el-table-column>
             <el-table-column align="center" prop="teacher" label="授课教师"></el-table-column>
             <el-table-column align="center" prop="clazz" label="上课班级"></el-table-column>
+            <el-table-column align="center" prop="grade" label="上课年级"></el-table-column>
             <el-table-column align="center" prop="duration" label="课时"></el-table-column>
             <el-table-column align="center" prop="timeStr" label="上课时间(周)"></el-table-column>
             <el-table-column align="center" label="操作">
@@ -87,6 +89,21 @@
       </div>
     </el-dialog>
 
+    <el-dialog :visible.sync="importDialog" title="学生信息导入">
+      <el-upload
+        class="upload-demo"
+        drag
+        action="#"
+        accept=".xls,.xlsx"
+        :auto-upload="false"
+        :show-file-list="false"
+        :on-change="beforeUpload">
+        <i class="el-icon-upload"></i>
+        <div class="el-upload__text">将文件拖到此处，或<em>点击上传</em></div>
+        <div class="el-upload__tip" slot="tip">只能上传.xls、.xlsx文件</div>
+      </el-upload>
+    </el-dialog>
+
     <!-- 选老师 -->
     <el-dialog :visible.sync="teachDialog" title="选择授课教师">
       <teachPage @selectTeacher="selectTeacher" />
@@ -107,15 +124,16 @@
 
 <script>
   import mixin from '@/mixin'
-  import {
-    getDepartmentList
-  } from '@/api/department'
+  import { mapGetters } from 'vuex'
   import {
     addSubject,
     getSubjectList,
     updateSubject,
     delSubject
   } from '@/api/subject'
+  import {
+    importData
+  } from '@/api'
   import teachPage from '@/pages/edu/components/teachPage.vue'
   import clazzPage from '@/pages/edu/components/clazzPage.vue'
   export default {
@@ -126,6 +144,7 @@
     data() {
       return {
         deptList: [],
+        importDialog: false,
         form: {
           id: '',
           name: '',
@@ -155,6 +174,9 @@
       }
     },
     mixins: [mixin],
+    computed: {
+      ...mapGetters(['uid'])
+    },
     created() {
       this.getList(false)
     },
@@ -225,6 +247,19 @@
         delSubject(row.id).then(res => {
           if(res.data.code === 200) {
             this.getList(true)
+          }
+        })
+      },
+      beforeUpload(file) {
+        const type = ["application/vnd.ms-excel", "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"]
+        if(!type.includes(file.raw.type)) {
+          this.$message.error("文件格式错误")
+          return false
+        }
+        importData({ file: file.raw, uid: this.uid, type: 'subject' }).then(res => {
+          if(res.data.code === 200) {
+            this.$fullLoading.close()
+            this.getList(false)
           }
         })
       }

@@ -23,7 +23,7 @@ Vue.prototype.$fullLoading = {
     })
   },
   close: () => {
-    loading.close()
+    loading && loading.close()
   }
 }
 

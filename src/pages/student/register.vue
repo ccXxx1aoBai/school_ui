@@ -7,21 +7,28 @@
         </el-header>
         <el-main>
           <div class="body">
-            <el-steps :active="active" process-status="process" align-center finish-status="success">
-              <el-step title="信息完善">
-              </el-step>
-              <el-step title="选择寝室"></el-step>
-              <el-step title="完成"></el-step>
-            </el-steps>
             <div class="form">
-              <el-form :model="form">
-                <el-form-item label="" prop="">
-                  <el-input></el-input>
+              <el-form>
+                <el-form-item label="学号：">
+                  <span>{{ username }}</span>
                 </el-form-item>
-                <el-form-item label="" prop="">
-                  <el-input></el-input>
+                <el-form-item label="姓名：">
+                  <span>{{ name }}</span>
+                </el-form-item>
+                <el-form-item label="院系：">
+                  <span>{{ dept }}</span>
+                </el-form-item>
+                <el-form-item label="专业班级：">
+                  <span>{{ `${major}0${clazz}班` }}</span>
+                </el-form-item>
+                <el-form-item label="班主任：">
+                  <span>{{ teacher }}</span>
+                </el-form-item>
+                <el-form-item>
+                  <el-tag>B501</el-tag>
                 </el-form-item>
               </el-form>
+              <el-button type="primary" style="width: 200px;margin: 20px auto;" @click="active = 1">提交</el-button>
             </div>
           </div>
         </el-main>
@@ -31,14 +38,15 @@
 </template>
 
 <script>
+import { mapGetters } from 'vuex'
 export default {
   data() {
     return {
       active: 0,
-      form: {
-        
-      }
     }
+  },
+  computed: {
+    ...mapGetters(['uid', 'name', 'username', 'dept', 'major', 'clazz', 'teacher'])
   }
 }
 </script>
@@ -97,6 +105,11 @@ export default {
 
       &::v-deep .el-step__head.is-process {
         border-color: #409eff;
+      }
+
+      .form {
+        width: 300px;
+        margin: 50px auto;
       }
     }
   }

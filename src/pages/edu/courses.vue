@@ -30,8 +30,9 @@
                 </el-select>
               </el-col>
               <el-col :span="6" :offset="1">
-                <el-button type="primary" icon="el-icon-search">查询</el-button>
+                <el-button type="primary" icon="el-icon-search" @click="getList(true)">查询</el-button>
                 <el-button type="primary" icon="el-icon-date" @click="dialog = !dialog">排课</el-button>
+                <el-button type="primary" icon="el-icon-date" @click="handleAuto()">自动排课</el-button>
               </el-col>
             </el-row>
           </div>
@@ -209,6 +210,14 @@
                 this.getList(true)
               }
             })
+          }
+        })
+      },
+      handleAuto() {
+        this.form.auto = '1'
+        arrangeCourse(this.form).then(res => {
+          if(res.data.code === 200) {
+            this.getList(true)
           }
         })
       },

@@ -13,7 +13,7 @@ export default {
       siftClazz: '',
       deptList: [],
       loading: false,
-      tableData: [{}],
+      tableData: [],
       total: 0,
       current: 1,
       size: 20,

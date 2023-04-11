@@ -53,7 +53,7 @@
     name: '',
     data() {
       return {
-        year: new Date().getFullYear(),
+        year: '',
         term: 1,
         type: 1,
         tableData: [
@@ -79,6 +79,16 @@
             col5: '英语',
           }
         ]
+      }
+    },
+    created() {
+      const date = new Date()
+      if(date.getMonth() < 6) {
+        this.year = date.getFullYear() - 1
+        this.term = 2
+      }else {
+        this.year = date.getFullYear()
+        this.term = 1
       }
     }
   }
