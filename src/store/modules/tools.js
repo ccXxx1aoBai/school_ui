@@ -6,7 +6,8 @@ const tools = {
     tabs: [],
     breadcrumb: [],
     routes: [],
-    menus: []
+    menus: [],
+    token: ''
   },
 
   mutations: {
@@ -21,6 +22,9 @@ const tools = {
     },
     SET_MENU: (state, data) => {
       state.menus = data
+    },
+    SET_TOKEN: (state, data) => {
+      state.token = data
     }
   },
 
@@ -30,6 +34,9 @@ const tools = {
     },
     ChangeTabs: ({commit}, data) => {
 
+    },
+    storeToken: ({ commit }, data) => {
+      commit('SET_TOKEN', data)
     },
     GetRoutes: ({commit, dispatch}, data) => {
       return new Promise(resolve => {

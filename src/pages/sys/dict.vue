@@ -11,13 +11,13 @@
               <el-input placeholder="字典标识" clearable v-model="siftValue"></el-input>
             </el-col>
             <el-col :span="3" :offset="1">
-              <el-button type="primary" @click="getDictList(true)">查询</el-button>
+              <el-button type="primary" @click="getList(true)">查询</el-button>
               <el-button type="primary" @click="dialog = !dialog">新增</el-button>
             </el-col>
           </el-row>
         </div>
         <div class="table">
-          <el-table :data="dictList" border v-loading="loading" element-loading-text="加载中" height="660"
+          <el-table :data="tableData" border v-loading="loading" element-loading-text="加载中" height="660"
           element-loading-spinner="el-icon-loading" element-loading-background="rgba(0, 0, 0, 0.8)">
             <el-table-column prop="id" label="字典编号" align="center"></el-table-column>
             <el-table-column prop="label" label="字典名称" align="center"></el-table-column>
@@ -66,6 +66,7 @@
 </template>
 
 <script>
+import mixin from '@/mixin'
 import {
   addDict,
   getDict,
@@ -75,14 +76,6 @@ import {
 export default {
   data() {
     return {
-      siftLabel: '',
-      siftValue: '',
-      dictList: [],
-      loading: false,
-      total: 0,
-      current: 1,
-      size: 10,
-      dialog: false,
       dictForm: {
         id: '',
         label: '',
@@ -102,38 +95,12 @@ export default {
       }
     }
   },
-  computed: {
-    pagination() {
-      const {current, size} = this
-      return {current, size}
-    }
-  },
-  watch: {
-    pagination() {
-      this.getDictList(true)
-    }
-  },
+  mixins: [mixin],
   created() {
-    this.getDictList(true)
-    // const ws = new WebSocket('ws://127.0.0.1:9090/message/2')
-    // ws.addEventListener('open', e => {
-    //   console.log('连接成功');
-    // })
-    // ws.onerror = (err) => {
-    //   console.log(err);
-    // }
-    // ws.addEventListener('message', data => {
-    //   const {source, message} = JSON.parse(data.data)
-    //   console.log(data);
-    //   this.$notify({
-    //     title: '系统信息',
-    //     message: message,
-    //     type: 'success'
-    //   })
-    // })
+    this.getList(true)
   },
   methods: {
-    getDictList(load) {
+    getList(load) {
       this.loading = load
       const params = {}
       params.label = this.siftLabel
@@ -160,7 +127,7 @@ export default {
       this.$fullLoading.load('正在提交...')
       delDict(row.id).then(res => {
         if(res.data.code === 200) {
-          this.getDictList(false)
+          this.getList(false)
         }
         this.$fullLoading.close()
       }).catch(() => {
@@ -175,7 +142,7 @@ export default {
             updateDict(this.dictForm).then(res => {
               if(res.data.code === 200) {
                 this.dialog = false
-                this.getDictList(false)
+                this.getList(false)
               }
               this.$fullLoading.close()
             }).catch(() => {
@@ -184,7 +151,7 @@ export default {
           }else {
             addDict(this.dictForm).then(res => {
               if(res.data.code === 200) {
-                this.getDictList(true)
+                this.getList(true)
                 this.$refs.dictForm.resetFields()
               }
               this.$fullLoading.close()

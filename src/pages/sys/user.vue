@@ -104,7 +104,6 @@
     },
     created() {
       getDepartmentList().then(res => {
-        console.log(res);
         this.tree = res.data.data
       })
       this.getList(true, this.page, this.size, [])
@@ -123,7 +122,6 @@
         params.size = this.size
         params.classIds = this.siftRole
         getUserList(params).then(res => {
-          console.log(res);
           setTimeout(() => {
             const {total, list} = res.data.data
             this.total = total

@@ -148,6 +148,7 @@
         options: [],
         dialog: false,
         menuForm: {
+          id: '',
           label: '',
           icon: '',
           parent: '',
@@ -184,7 +185,6 @@
     created() {
       this.getList(true)
       getRoleOption().then(res => {
-        console.log(res);
         const {data} = res.data
         this.roleList = data
       })
@@ -193,7 +193,6 @@
       getList(load) {
         this.loading = load
         getMenuList({}).then(res => {
-          console.log(res.data);
           this.tableData = res.data.data
           this.total = res.data.data.length
           this.loading = false

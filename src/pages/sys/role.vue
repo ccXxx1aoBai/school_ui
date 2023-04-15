@@ -5,7 +5,7 @@
         <div class="tools">
           <el-row>
             <el-col :span="4">
-              <el-input v-model="siftRoleName" clearable placeholder="角色名称" maxlength="20"></el-input>
+              <el-input v-model="siftName" clearable placeholder="角色名称" maxlength="20"></el-input>
             </el-col>
             <el-col :span="2" :offset="1">
               <el-button type="primary" @click="getList(true)">查询</el-button>
@@ -14,7 +14,7 @@
           </el-row>
         </div>
         <div class="table">
-          <el-table border stripe height="600" :data="roleList" size="mini" v-loading="tableLoading"
+          <el-table border stripe height="600" :data="tableData" size="mini" v-loading="loading"
           element-loading-text="加载中" element-loading-spinner="el-icon-loading">
             <el-table-column label="角色ID" prop="id" align="center"></el-table-column>
             <el-table-column label="权限标识" prop="role" align="center"></el-table-column>
@@ -67,16 +67,16 @@
 </template>
 
 <script>
-import {getAllMenu} from '@/api/menu'
-import { getRoleList, updateRoleInfo, addRole, delRole } from '@/api/role'
+  import mixin from '@/mixin'
+  import { getRoleList, 
+    updateRoleInfo,
+    addRole,
+    delRole
+  } from '@/api/role'
   export default {
     name: '',
     data() {
       return {
-        siftRoleName: '',
-        tableLoading: false,
-        roleList: [],
-        dialog: false,
         roleForm: {
           id: '',
           role: '',
@@ -94,28 +94,22 @@ import { getRoleList, updateRoleInfo, addRole, delRole } from '@/api/role'
         defaultChecked: [],
       }
     },
+    mixins: [mixin],
     created() {
-      this.$fullLoading.load()
-      getAllMenu().then(res => {
-        this.menuTree = res.data.data
-      })
       this.getList(false)
     },
     methods: {
       getList(load) {
-        this.tableLoading = load
-        getRoleList({name: this.siftRoleName}).then(res => {
-          this.roleList = res.data.data
-          this.tableLoading = false
-          this.$fullLoading.close()
+        this.loading = load
+        getRoleList({name: this.siftName}).then(res => {
+          this.tableData = res.data.data
+          this.loading = false
         }).catch(err => {
-          this.tableLoading = false
-          this.$fullLoading.close()
+          this.loading = false
         })
       },
       handleDel(row) {
         delRole(row.id).then(res => {
-          console.log(res);
           if(res && res.data.code === 200) {
             this.getList(true)
           }

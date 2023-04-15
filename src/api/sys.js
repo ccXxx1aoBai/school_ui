@@ -28,13 +28,13 @@ export const getMemory = () => {
   })
 }
 
-export const getLogList = (params) => {
-  const param = new URLSearchParams()
-  param.append("current", params.page)
-  param.append("size", params.size)
+export const getLogList = (paramObj) => {
+  const params = new URLSearchParams()
+  params.append("current", paramObj.current)
+  params.append("size", paramObj.size)
   return request({
     url: '/log',
     method: 'get',
-    params: param
+    params
   })
 }

@@ -3,7 +3,7 @@
     <el-row>
       <el-col :span="3" v-for="avatar in items" :key="avatar.id" style="margin: 20px 10px 20px 15px;">
         <el-card v-if="avatar.attachId" shadow="hover">
-          <el-image :src="avatar.attachName" fit="fill" :preview-src-list="preview" @click="imagePreview(avatar)"
+          <el-image :src="FILE_BASE_URL + avatar.attachName" fit="fill" :preview-src-list="preview" @click="imagePreview(avatar)"
             style="width: 170px;height: 170px;display: block;"></el-image>
           <div style="padding: 10px 0;position: relative;">
             <span>{{avatar.attachId}}</span>
@@ -98,9 +98,9 @@
       },
       imagePreview(avatar) {
         if(this.preview.length == 1) {
-          this.$set(this.preview, 0, avatar.attachName)
+          this.$set(this.preview, 0, this.FILE_BASE_URL + avatar.attachName)
         }else {
-          this.preview.push(avatar.attachName)
+          this.preview.push(this.FILE_BASE_URL + avatar.attachName)
         }
       },
       delAvatar(avatar) {

@@ -79,7 +79,7 @@ export default {
               if(data.state_code == '1') {
                 this.$router.push('/register')
               }else {
-                res.headers.token && localStorage.setItem('token', res.headers.token)
+                res.headers.token && this.$store.dispatch('storeToken', res.headers.token)
                 sessionStorage.setItem('sign', AesUtils.encrypt(data.id))
                 this.$router.push('/index')
               }

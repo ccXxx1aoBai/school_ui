@@ -1,7 +1,7 @@
 <template>
   <div>
     <div class="wrap">
-      <el-table :data="tables" height="700" v-loading="loading" element-loading-text="拼命加载中" 
+      <el-table :data="tableData" height="700" v-loading="loading" element-loading-text="拼命加载中" 
       element-loading-spinner="el-icon-loading" element-loading-background="rgba(0, 0, 0, 0.8)" border>
         <el-table-column prop="id" label="日志编号" align="center" width="200"  show-overflow-tooltip></el-table-column>
         <el-table-column prop="operation" label="操作人" align="center"></el-table-column>
@@ -19,7 +19,7 @@
       </el-table>
       <el-pagination
       :total="total"
-      :current-page="page"
+      :current-page="current"
       :page-size.sync="size"
       :page-sizes="[20, 50, 100, 300, 500]"
       @current-change="handlePageChange"
@@ -29,42 +29,32 @@
 </template>
 
 <script>
-  import {getLogList} from '@/api/sys'
+  import mixin from '@/mixin'
+  import {
+    getLogList
+  } from '@/api/sys'
   export default {
     name: '',
     data() {
       return {
-        loading: false,
-        tables: [],
-        total: 0,
-        page: 1,
-        size: 20
+
       }
     },
-    computed: {
-      pagination() {
-        const {page, size} = this
-        return {page, size}
-      }
-    },
-    watch: {
-      pagination(val) {
-        this.getList(true, val)
-      }
-    },
+    mixins: [mixin],
     created() {
       this.getList(true, this)
     },
     methods: {
-      getList(load, {page, size} = pagination) {
+      getList(load) {
         this.loading = load
-        getLogList({page, size}).then(res => {
-          setTimeout(() => {
-            this.loading = false
-            const {list, total} = res.data.data
-            this.tables = list
-            this.total = total
-          }, 1000);
+        const params = {}
+        params.current = this.current
+        params.size = this.size
+        getLogList(params).then(res => {
+          this.loading = false
+          const { list, total } = res.data.data
+          this.tableData = list
+          this.total = total
         }).catch(err => {
           this.loading = false
         })

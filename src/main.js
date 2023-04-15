@@ -5,10 +5,12 @@ import '@/assets/css/element-variables.scss'
 import router from '@/router'
 import store from '@/store'
 import { Notification } from 'element-ui'
+import { FILE_BASE_URL } from '@/utils/config'
 
 Vue.config.productionTip = false
 
 Vue.prototype.$store = store
+Vue.prototype.FILE_BASE_URL = FILE_BASE_URL
 
 Vue.use(ElementUI, {size: 'small'});
 

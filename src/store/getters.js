@@ -22,7 +22,8 @@ const getters = {
   tabs: state => state.tools.tabs,
   breadcrumb: state => state.tools.breadcrumb,
   routes: state => state.tools.routes,
-  menus: state => state.tools.menus
+  menus: state => state.tools.menus,
+  token: state => state.tools.token
 }
 
 export default getters

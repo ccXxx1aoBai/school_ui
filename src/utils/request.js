@@ -1,6 +1,7 @@
 import axios from 'axios'
 import { Notification, MessageBox } from 'element-ui'
 import Prompt from './enum'
+import store from '@/store'
 
 const baseURL = 'http://127.0.0.1:6350/school'
 // const baseURL = 'http://localhost:9090'
@@ -14,7 +15,7 @@ const service = axios.create({
 
 service.interceptors.request.use(
   config => {
-    const token = localStorage.getItem('token')
+    const token = store.getters.token
     const uuid = localStorage.getItem('uuid')
     token && (config.headers.token = token)
     uuid && (config.headers.uuid = uuid)
@@ -30,6 +31,7 @@ service.interceptors.response.use(
     const {code, msg} = res.data
     if(res.data.code === 200 || code === void 0) {
       successNotification(msg)
+      store.dispatch('storeToken', res.headers.token)
       return res
     }
     warnNotification(msg)
