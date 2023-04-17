@@ -37,6 +37,10 @@ service.interceptors.response.use(
     warnNotification(msg)
   },
   error => {
+    if(error.name == 'AxiosError') {
+      sysNotification('请求超时')
+      return
+    }
     const {status} = error.response
     if(status === 400){
       sysNotification('参数错误')
