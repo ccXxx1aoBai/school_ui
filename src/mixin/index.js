@@ -14,6 +14,7 @@ export default {
       siftLabel: '',
       siftValue: '',
       siftStatus: '',
+      siftSubject: '',
       startTime: '',
       endTime: '',
       deptList: [],

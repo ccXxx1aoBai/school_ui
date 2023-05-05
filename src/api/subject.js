@@ -34,3 +34,15 @@ export const delSubject = (id) => {
     method: 'delete'
   })
 }
+
+export const getSignRecord = (paramObj) => {
+  const params = new URLSearchParams()
+  Object.keys(paramObj).forEach(key => {
+    params.append(key, paramObj[key])
+  })
+  return request({
+    url: '/subject/sign/list',
+    method: 'get',
+    params
+  })
+}

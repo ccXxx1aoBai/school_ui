@@ -212,13 +212,13 @@
         const {data} = res.data
         this.drawMemory(data)
       })
-      this.interval = setInterval(() => {
-        getMemory().then(res => {
-          const {data} = res.data
-          this.memory.used = data.used
-          this.drawMemory(data)
-        })
-      }, 1000 * 10);
+      // this.interval = setInterval(() => {
+      //   getMemory().then(res => {
+      //     const {data} = res.data
+      //     this.memory.used = data.used
+      //     this.drawMemory(data)
+      //   })
+      // }, 1000 * 10);
     },
     methods: {
       drawMemory(data) {
