@@ -19,3 +19,10 @@ export const getStudyList = (paramObj) => {
     params
   })
 }
+
+export const delStudyRoom = (id) => {
+  return request({
+    url: `/study/${id}`,
+    method: 'delete'
+  })
+}
