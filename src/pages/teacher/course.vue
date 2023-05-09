@@ -48,7 +48,7 @@
 import mixin from '@/mixin'
 import {
   getYearList,
-  getStudentCourse
+  getTeacherCourse
 } from '@/api/course'
 export default {
   name: '',
@@ -74,9 +74,9 @@ export default {
     getList(load) {
       this.loading = load
       const params = {}
-      params.uid = '001aaa4b0d414b0675985afb02dbb2ce' || this.$store.getters.uid
+      params.id = 'DFDFEAAAFHNXa1bcf55a5c0022fc8519' || this.$store.getters.uid
       params.siftTime = this.siftYear
-      getStudentCourse(params).then(res => {
+      getTeacherCourse(params).then(res => {
         this.loading = false
         const { code, data } = res.data
         if(code === 200) {

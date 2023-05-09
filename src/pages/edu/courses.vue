@@ -5,7 +5,7 @@
         <el-form label-width="100px" label-position="left" v-if="init">
           <el-form-item prop="year" label="学年">
             <el-select v-model="siftYear">
-              <el-option value="2022-2023学年"></el-option>
+              <el-option v-for="year in yearList" :key="year" :value="year"></el-option>
             </el-select>
           </el-form-item>
           <el-form-item prop="type"  label="课程性质">
@@ -26,13 +26,13 @@
               </el-col>
               <el-col :span="3" :offset="1">
                 <el-select v-model="siftTime" clearable placeholder="学年">
-                  <el-option value="2022-2023学年"></el-option>
+                  <el-option v-for="year in yearList" :key="year" :value="year"></el-option>
                 </el-select>
               </el-col>
               <el-col :span="6" :offset="1">
                 <el-button type="primary" icon="el-icon-search" @click="getList(true)">查询</el-button>
                 <el-button type="primary" icon="el-icon-date" @click="dialog = !dialog">排课</el-button>
-                <el-button type="primary" icon="el-icon-date" @click="handleAuto()">自动排课</el-button>
+                <el-button type="primary" icon="el-icon-date" @click="cDialog = true">自动排课</el-button>
               </el-col>
             </el-row>
           </div>
@@ -129,6 +129,13 @@
         <el-button type="primary" @click="roomDialog = false">确定</el-button>
       </div>
     </el-dialog>
+
+    <el-dialog :visible.sync="cDialog" title="学期开始时间">
+      <el-date-picker v-model="start" type="date" clearable placeholder="学期开始时间"></el-date-picker>
+      <div slot="footer">
+        <el-button type="primary" @click="handleAuto()">排课</el-button>
+      </div>
+    </el-dialog>
   </div>
 </template>
 
@@ -140,7 +147,8 @@
   import {
     arrangeCourse,
     getCourseList,
-    delCourse
+    delCourse,
+    getYearList
   } from '@/api/course'
   export default {
     components: {
@@ -150,6 +158,8 @@
     data() {
       return {
         init: false,
+        cDialog: false,
+        start: '',
         form: {
           id: '',
           subjectId: '',
@@ -175,7 +185,8 @@
           ]
         },
         subjectDialog: false,
-        roomDialog: false
+        roomDialog: false,
+        yearList: []
       }
     },
     mixins: [mixin],
@@ -185,7 +196,15 @@
       }
     },
     created() {
+      const curdate = new Date()
+      const year = curdate.getFullYear()
+      this.siftTime = curdate.getMonth() < 6 ? `${(year - 1)}-${year}-2` : `${(year)}-${(year + 1)}-1`
       this.getList(false)
+      getYearList().then(res => {
+        if(res.data.code === 200) {
+          this.yearList = res.data.data
+        }
+      })
     },
     methods: {
       selectSubject(row) {
@@ -215,9 +234,11 @@
       },
       handleAuto() {
         this.form.auto = '1'
+        this.form.start = new Date(this.start).getTime()
         arrangeCourse(this.form).then(res => {
           if(res.data.code === 200) {
             this.getList(true)
+            this.cDialog = false
           }
         })
       },
@@ -227,7 +248,7 @@
         params.size = this.size
         params.current = this.current
         params.siftName = this.siftName
-        params.siftYear = this.siftYear
+        params.siftTime = this.siftTime
         getCourseList(params).then(res => {
           this.loading = false
           const { code, data } = res.data
