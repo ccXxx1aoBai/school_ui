@@ -337,8 +337,8 @@
 
       ::v-deep .el-pagination{
         position: absolute;
-        bottom: 30px;
-        right: 20px;
+        right: 60px;
+        padding-top: 15px;
       }
     }
   }

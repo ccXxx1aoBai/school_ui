@@ -10,11 +10,7 @@ export const addDict = (data) => {
 }
 
 
-export const getDict = (paramsObj) => {
-  const params = new URLSearchParams()
-  Object.keys(paramsObj).forEach(key => {
-    params.append(key, paramsObj[key])
-  })
+export const getDict = (params) => {
   return request({
     url: '/dict',
     method: 'get',

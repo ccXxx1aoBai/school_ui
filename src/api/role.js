@@ -1,8 +1,6 @@
 import request from '@/utils/request'
 
-export const getRoleList = (data) => {
-  const params = new URLSearchParams()
-  params.append('name', data.name)
+export const getRoleList = (params) => {
   return request({
     url: '/role',
     method: 'get',

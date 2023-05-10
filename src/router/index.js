@@ -59,7 +59,7 @@ router.beforeEach((to, from, next) => {
     }else {
       if(sessionStorage.getItem('sign') && AesUtils.decrypt(sessionStorage.getItem('sign')) == store.getters.uid) {
         if(router.getRoutes().length < 5) {
-          store.dispatch("GetRoutes", store.getters.uid).then(routeList => {
+          store.dispatch("getRoutes", store.getters.uid).then(routeList => {
             routeList.forEach(route => {
               router.addRoute('Layout', route)
             })

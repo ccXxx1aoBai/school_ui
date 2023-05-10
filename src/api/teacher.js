@@ -1,10 +1,6 @@
 import request from '@/utils/request'
 
-export const getTeacherList = (parms) => {
-  const params = new URLSearchParams()
-  Object.keys(parms).forEach(key => {
-    params.append(key, parms[key])
-  })
+export const getTeacherList = (params) => {
   return request({
     url: '/teacher',
     method: 'get',

@@ -19,7 +19,7 @@
           </el-row>
         </div>
         <div class="table">
-          <el-table border stripe height="600" :data="tableData" size="mini" v-loading="tableLoading"
+          <el-table border stripe height="600" :data="tableData" size="mini" v-loading="lading"
           element-loading-text="拼命加载中" element-loading-spinner="el-icon-loading"
           element-loading-background="rgba(0, 0, 0, 0.8)">
             <el-table-column label="ID" prop="id" align="center"></el-table-column>
@@ -61,10 +61,9 @@
           <el-pagination 
           style="margin-top: 20px"
           :total="total"
-          :current-page="current"
+          :current-page.sync="current"
           :page-size.sync="size"
           :page-sizes="[10, 20, 30, 50, 100]"
-          @current-change="handlePageChange"
           layout="total, sizes, prev, pager, next, jumper" />
         </div>
       </div>

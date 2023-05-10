@@ -5,11 +5,7 @@ import request from '@/utils/request'
  * @param {current, size, siftDept, siftName} {分页当前页，分页大小，所属学院，班级名称} 
  * @returns 
  */
-export const getClazzList = (paramsObj) => {
-  const params = new URLSearchParams()
-  Object.keys(paramsObj).forEach(key => {
-    params.append(key, paramsObj[key])
-  })
+export const getClazzList = (params) => {
   return request({
     url: '/clazz',
     method: 'get',

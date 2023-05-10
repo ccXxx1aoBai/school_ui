@@ -5,11 +5,7 @@ import request from '@/utils/request'
  * @param {current, size, siftName} {分页当前页，页大小，教室名称} 
  * @returns 
  */
-export const getRoom = (paramsObj) => {
-  const params = new URLSearchParams()
-  Object.keys(paramsObj).forEach(key => {
-    params.append(key, paramsObj[key])
-  })
+export const getRoom = (params) => {
   return request({
     url: 'room',
     method: 'get',

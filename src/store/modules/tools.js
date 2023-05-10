@@ -38,7 +38,7 @@ const tools = {
     storeToken: ({ commit }, data) => {
       commit('SET_TOKEN', data)
     },
-    GetRoutes: ({commit, dispatch}, data) => {
+    getRoutes: ({commit, dispatch}, data) => {
       return new Promise(resolve => {
         getRoutes(store.getters.uid).then(res => {
           const menus = formatRoutes(res.data.data)

@@ -28,10 +28,7 @@ export const getMemory = () => {
   })
 }
 
-export const getLogList = (paramObj) => {
-  const params = new URLSearchParams()
-  params.append("current", paramObj.current)
-  params.append("size", paramObj.size)
+export const getLogList = (params) => {
   return request({
     url: '/log',
     method: 'get',

@@ -1,10 +1,6 @@
 import request from '@/utils/request'
 
-export const getForumList = (paramObj) => {
-  const params = new URLSearchParams()
-  Object.keys(paramObj).forEach(key => {
-    params.append(key, paramObj[key])
-  })
+export const getForumList = (params) => {
   return request({
     url: '/forum',
     method: 'get',

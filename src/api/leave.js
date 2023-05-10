@@ -9,9 +9,11 @@ export const addLeave = (data) => {
 }
 
 export const getLeaveList = (uid, current, size) => {
-  const params = new URLSearchParams()
-  params.append('current', current)
-  params.append('size', size)
+  const params = {
+    uid,
+    current,
+    size
+  }
   return request({
     url: `/leave/${uid}`,
     method: 'get',

@@ -1,20 +1,16 @@
 import request from '@/utils/request'
 
-export const getRoutes = (data) => {
-  const params = new URLSearchParams()
-  params.append('uid', data)
+export const getRoutes = (uid) => {
   return request({
     url: '/menu/routes',
     method: 'get',
-    params
+    params: {
+      uid
+    }
   })
 }
 
-export const getMenuList = (data) => {
-  const params = new URLSearchParams()
-  Object.keys(data).forEach(key => {
-    params.append(key, data[key])
-  })
+export const getMenuList = (params) => {
   return request({
     url: '/menu/all',
     method: 'get',

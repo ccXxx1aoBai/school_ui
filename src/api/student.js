@@ -1,10 +1,6 @@
 import request from '@/utils/request'
 
-export const getStudent = (paramsObj) => {
-  const params = new URLSearchParams()
-  Object.keys(paramsObj).forEach(key => {
-    params.append(key, paramsObj[key])
-  })
+export const getStudent = (params) => {
   return request({
     url: '/student',
     method: 'get',

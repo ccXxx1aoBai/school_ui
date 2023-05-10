@@ -8,11 +8,7 @@ export const addSubject = (data) => {
   })
 }
 
-export const getSubjectList = (paramObj) => {
-  const params = new URLSearchParams()
-  Object.keys(paramObj).forEach(key => {
-    params.append(key, paramObj[key])
-  })
+export const getSubjectList = (params) => {
   return request({
     url: '/subject',
     method: 'get',
@@ -35,11 +31,7 @@ export const delSubject = (id) => {
   })
 }
 
-export const getSignRecord = (paramObj) => {
-  const params = new URLSearchParams()
-  Object.keys(paramObj).forEach(key => {
-    params.append(key, paramObj[key])
-  })
+export const getSignRecord = (params) => {
   return request({
     url: '/subject/sign/list',
     method: 'get',

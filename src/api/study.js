@@ -8,11 +8,7 @@ export const addStudyRoom = (data) => {
   })
 }
 
-export const getStudyList = (paramObj) => {
-  const params = new URLSearchParams()
-  Object.keys(paramObj).forEach(key => {
-    params.append(key, paramObj[key])
-  })
+export const getStudyList = (params) => {
   return request({
     url: '/study',
     method: 'get',

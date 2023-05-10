@@ -8,11 +8,7 @@ export const arrangeCourse = (data) => {
   })
 }
 
-export const getCourseList = (paramObj) => {
-  const params = new URLSearchParams()
-  Object.keys(paramObj).forEach(key => {
-    params.append(key, paramObj[key])
-  })
+export const getCourseList = (params) => {
   return request({
     url: '/course',
     method: 'get',
@@ -34,11 +30,7 @@ export const getYearList = () => {
   })
 }
 
-export const getStudentCourse = (paramObj) => {
-  const params = new URLSearchParams()
-  Object.keys(paramObj).forEach(key => {
-    params.append(key, paramObj[key])
-  })
+export const getStudentCourse = (params) => {
   return request({
     url: '/course/pc',
     method: 'get',
@@ -46,11 +38,7 @@ export const getStudentCourse = (paramObj) => {
   })
 }
 
-export const getTeacherCourse = (paramObj) => {
-  const params = new URLSearchParams()
-  Object.keys(paramObj).forEach(key => {
-    params.append(key, paramObj[key])
-  })
+export const getTeacherCourse = (params) => {
   return request({
     url: '/course/forteacher',
     method: 'get',

@@ -3,6 +3,7 @@ import { exportExcel } from '@/api/index'
 export default {
   data() {
     return {
+      siftId: '',
       siftName: '',
       siftTime: '',
       siftYear: '',

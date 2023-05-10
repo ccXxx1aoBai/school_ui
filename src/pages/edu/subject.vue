@@ -23,7 +23,7 @@
           element-loading-background="rgba(0, 0, 0, 0.8)">
             <el-table-column align="center" prop="name" label="课程名称"></el-table-column>
             <el-table-column align="center" prop="teacher" label="授课教师"></el-table-column>
-            <el-table-column align="center" prop="clazz" label="上课班级"></el-table-column>
+            <el-table-column align="center" prop="clazz" label="上课班级" show-overflow-tooltip></el-table-column>
             <el-table-column align="center" prop="grade" label="上课年级"></el-table-column>
             <el-table-column align="center" prop="duration" label="课时"></el-table-column>
             <el-table-column align="center" prop="timeStr" label="上课时间(周)"></el-table-column>
@@ -82,6 +82,23 @@
           <el-select v-model="form.time" clearable placeholder="上课时间" multiple>
             <el-option v-for="(item, index) in 20" :key="index" :value="item" :label="item"></el-option>
           </el-select>
+        </el-form-item>
+        <el-form-item prop="year" label="上课学期">
+          <el-row>
+            <el-col :span="20">
+              <el-input v-model="form.year" clearable maxlength="20" placeholder="上课学期"></el-input>
+            </el-col>
+            <el-col :span="2" :offset="1">
+              <el-tooltip placement="top">
+                <div slot="content">
+                  <p>说明：</p>
+                  <p>“2022-2023-1”表示2022年秋季学期</p>
+                  <p>“2022-2023-2”表示2023年春季学期</p>
+                </div>
+                <i class="el-icon-info"></i>
+              </el-tooltip>
+            </el-col>
+          </el-row>
         </el-form-item>
       </el-form>
       <div slot="footer">
@@ -152,7 +169,8 @@
           teacher: '',
           clazz: '',
           time: [],
-          timeStr: ''
+          timeStr: '',
+          year: ''
         },
         rules: {
           name: [
@@ -166,6 +184,9 @@
           ],
           time: [
             { required: true, message: '请选择上课时间' }
+          ],
+          year: [
+            { required: true, message: '请输入上课学期' }
           ]
         },
         teachDialog: false,

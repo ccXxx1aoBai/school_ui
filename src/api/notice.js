@@ -8,11 +8,7 @@ export const addNotice = (data) => {
   })
 }
 
-export const getNotice = (paramsObj) => {
-  const params = new URLSearchParams()
-  Object.keys(paramsObj).forEach(key => {
-    params.append(key, paramsObj[key])
-  })
+export const getNotice = (params) => {
   return request({
     url: '/notice',
     method: 'get',
