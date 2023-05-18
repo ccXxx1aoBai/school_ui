@@ -36,6 +36,7 @@ const tools = {
 
     },
     storeToken: ({ commit }, data) => {
+      localStorage.setItem('token', data)
       commit('SET_TOKEN', data)
     },
     getRoutes: ({commit, dispatch}, data) => {

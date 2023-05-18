@@ -15,7 +15,7 @@
               <div class="breadcrumb">
                 <el-breadcrumb separator="/">
                   <el-breadcrumb-item to="/index">首页</el-breadcrumb-item>
-                  <el-breadcrumb-item>学生</el-breadcrumb-item>
+                  <el-breadcrumb-item></el-breadcrumb-item>
                 </el-breadcrumb>
               </div>
               <div class="tabs" v-if="items.length != 0">
@@ -39,19 +39,19 @@
             </div>
             <div class="user" style="margin-right: 0;">
               <div class="avatar">
-                <img src="@/assets/avatar.png">
+                <el-avatar :src="FILE_BASE_URL + avatar"></el-avatar>
               </div>
               <div class="userinfo">
-                <el-dropdown trigger="click">
-                  <span class="dropdown-label">用户名<i class="el-icon-arrow-down el-icon--right" /></span>
+                <el-dropdown trigger="click" @command="handleDropClick">
+                  <span class="dropdown-label">{{ name }}<i class="el-icon-arrow-down el-icon--right" /></span>
                   <el-dropdown-menu>
-                    <el-dropdown-item>
+                    <el-dropdown-item command="0">
                       <i class="el-icon-user">个人中心</i>
                     </el-dropdown-item>
-                    <el-dropdown-item>
+                    <el-dropdown-item command="1">
                       <i class="el-icon-setting">系统设置</i>
                     </el-dropdown-item>
-                    <el-dropdown-item>
+                    <el-dropdown-item command="2">
                       <i class="el-icon-switch-button">退出系统</i>
                     </el-dropdown-item>
                   </el-dropdown-menu>
@@ -124,7 +124,7 @@
       }
     },
     computed: {
-      ...mapGetters(['notice_total', 'menus']),
+      ...mapGetters(['notice_total', 'menus', 'name', 'avatar']),
       curRouterName() {
         return this.$route.name
       },
@@ -170,6 +170,16 @@
       },
       handleChangeNoticeStatus() {
 
+      },
+      handleDropClick(index) {
+        console.log(index);
+        if(index == '0') {
+
+        }else if(index == '2') {
+          localStorage.clear()
+          sessionStorage.clear()
+          this.$router.replace('/')
+        }
       }
     }
 }
@@ -279,16 +289,16 @@
 
       .user{
         display: flex;
-        width: 200px;
+        flex: 0 0 300px;
         height: 100%;
         line-height: 60px;
 
-        .avatar{
+        .avatar {
           width: 50px;
           height: 100%;
           margin: 0 10px;
 
-          img{
+          .el-avatar {
             display: block;
             width: 48px;
             height: 48px;
@@ -298,10 +308,12 @@
         }
 
         .userinfo{
+
           .dropdown-label{
+            color: #000000;
             line-height: 72px;
             font-size: 18px;
-            color: #000000;
+            cursor: pointer;
           }
         }
       }

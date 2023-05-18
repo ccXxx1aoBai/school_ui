@@ -55,7 +55,7 @@ router.beforeEach((to, from, next) => {
   if(to.path != '/' && to.path != '/login' && to.path != '/register') {
     if(!localStorage.getItem('token')) {
       localStorage.clear()
-      next({path: '/login'})
+      next('/login')
     }else {
       if(sessionStorage.getItem('sign') && AesUtils.decrypt(sessionStorage.getItem('sign')) == store.getters.uid) {
         if(router.getRoutes().length < 5) {
@@ -69,6 +69,9 @@ router.beforeEach((to, from, next) => {
           })
         }else {
           if(to.path == '/index') {
+            if(from.path == store.getters.routes[0].path) {
+              NProgress.done()
+            }
             next(store.getters.routes[0].path)
           }else {
             next()
