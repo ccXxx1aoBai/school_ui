@@ -3,7 +3,7 @@
     <el-row>
       <el-col :span="3" v-for="avatar in items" :key="avatar.id" style="margin: 20px 10px 20px 15px;">
         <el-card v-if="avatar.attachId" shadow="hover">
-          <el-image :src="FILE_BASE_URL + avatar.attachName" fit="fill" :preview-src-list="preview" @click="imagePreview(avatar)"
+          <el-image :src="avatar.attachName" fit="fill" :preview-src-list="preview" @click="imagePreview(avatar)"
             style="width: 170px;height: 170px;display: block;"></el-image>
           <div style="padding: 10px 0;position: relative;">
             <span>{{avatar.attachId}}</span>
@@ -66,6 +66,9 @@
       getAvatarList() {
         getSysAvatar().then(res => {
           this.$fullLoading.close()
+          res.data.data.map(item => {
+            return item.attachName = this.FILE_BASE_URL + item.attachName
+          })
           this.items = res.data.data
           this.items.unshift({})
         }).catch(() => {
@@ -114,10 +117,10 @@
         const index = this.items.findIndex(file => {
           return !file.id && avatar.attachName == file.attachName && avatar.attachId == file.attachId
         })
-        uploadImage(avatar.file, {uid: localStorage.getItem('uid'), type: 'avatar'}).then(res => {
+        uploadImage(avatar.file, {uid: this.$store.getters.uid, type: 'avatar'}).then(res => {
           if(res.data.code === 200) {
             this.$set(this.items[index], 'id', res.data.data.id)
-            this.$set(this.items[index], 'attachName', res.data.data.downUrl)
+            this.$set(this.items[index], 'attachName', this.FILE_BASE_URL + res.data.data.downUrl)
           }
         })
       },

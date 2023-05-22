@@ -12,8 +12,8 @@
               start-placeholder="开始时间" align="center" end-placeholder="结束时间" :default-time="['00:00:00', '23:59:59']"></el-date-picker>
             </el-col>
             <el-col :span="3" :offset="1">
-              <el-button type="primary" @click="getNoticeList(true)">查询</el-button>
-              <el-button type="primary" @click="dialog = !dialog">新增</el-button>
+              <el-button type="primary" icon="el-icon-search" @click="getNoticeList(true)">查询</el-button>
+              <el-button type="primary" icon="el-icon-plus" @click="dialog = !dialog">新增</el-button>
             </el-col>
           </el-row>
         </div>
@@ -49,8 +49,7 @@
       </div>
     </div>
 
-    <el-dialog :visible.sync="dialog" title="通知管理" fullscreen style="width: 50%;height: 90%;margin: auto;"
-    @close="beforeClose">
+    <el-dialog :visible.sync="dialog" title="通知管理" top="5vh" @close="beforeClose">
       <el-form :model="noticeForm" :rules="rules" ref="noticeForm" label-position="left" label-width="80px"
       style="height: 160px;">
         <el-form-item v-show="false">
@@ -188,12 +187,12 @@
           allowedFileTypes: ['image/png'],  // 只接受PNG格式图片
           customUpload: (file, fn) => {
             const params = {
-              uid: localStorage.getItem('uid'),
+              uid: this.$store.getters.uid,
               type: 'notice'
             }
             uploadImage(file, params).then(res => {
               const {ossUrl, downUrl, attachId} = res.data.data
-              fn(downUrl, attachId, downUrl)
+              fn(this.FILE_BASE_URL + downUrl, attachId, downUrl)
             })
           }
         }
@@ -214,11 +213,16 @@
       getNoticeList(load) {
         this.loading = load
         const params = {}
+        let start, end = ''
+        if(this.siftTime && this.siftTime.length > 0) {
+          start = this.siftTime[0]
+          end = this.siftTime[1]
+        }
         params.current = this.current
         params.size = this.size
         params.title = this.siftName
-        params.start = this.siftTime[0]
-        params.end = this.siftTime[1]
+        params.start = start
+        params.end = end
         getNotice(params).then(res => {
           const {list, total} = res.data.data
           this.total = total
@@ -243,14 +247,17 @@
                 diffImage.push(img)
               }
             })
-            const params = this.noticeForm
-            params.subId = localStorage.getItem('uid')
-            params.subName = localStorage.getItem('name')
-            params.target = JSON.stringify(this.noticeForm.target)
+            const params = {}
+            params.subId = this.$store.getters.uid
+            params.subName = this.$store.getters.name
+            params.target = this.noticeForm.target + ''
+            params.title = this.noticeForm.title
+            params.content = this.noticeForm.content
             if(this.noticeForm.id) {  // 编辑
               updateNotice(params).then(res => {
                 if(res.data.code === 200) {
                   this.dialog = false
+                  this.getNoticeList(true)
                 }
                 this.$fullLoading.close()
               }).catch(() => {
@@ -261,6 +268,7 @@
                 if(res.data.code === 200) {
                   this.$refs.noticeForm.resetFields()
                   this.editor.setHtml("")
+                  this.getNoticeList(true)
                 }
                 this.$fullLoading.close()
               }).catch(() => {
@@ -304,6 +312,7 @@
       },
       beforeClose() {
         this.$refs.noticeForm.resetFields()
+        this.editor.setHtml("")
       },
       goBack() {
         this.view = false

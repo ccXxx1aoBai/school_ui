@@ -11,8 +11,8 @@
               <el-input placeholder="字典标识" clearable v-model="siftValue"></el-input>
             </el-col>
             <el-col :span="3" :offset="1">
-              <el-button type="primary" @click="getList(true)">查询</el-button>
-              <el-button type="primary" @click="dialog = !dialog">新增</el-button>
+              <el-button type="primary" icon="el-icon-search" @click="getList(true)">查询</el-button>
+              <el-button type="primary" icon="el-icon-plus" @click="dialog = !dialog">新增</el-button>
             </el-col>
           </el-row>
         </div>
@@ -109,7 +109,7 @@ export default {
       params.current = this.current
       getDict(params).then(res => {
         this.total = res.data.data.total
-        this.dictList = res.data.data.list
+        this.tableData = res.data.data.list
         this.loading = false
       }).catch(() => {
         this.loading = false

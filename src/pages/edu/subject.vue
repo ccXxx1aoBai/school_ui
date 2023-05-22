@@ -212,7 +212,9 @@
         row.forEach(item => {
           clazzs += item.name + ','
         })
+        const grade = row[0].year.substring(0, 4)
         this.$set(this.form, 'clazz', clazzs.substring(0, clazzs.length - 1))
+        this.$set(this.form, 'grade', grade)
       },
       handleSubmit() {
         this.$refs.form.validate(valid => {

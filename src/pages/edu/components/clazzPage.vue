@@ -12,7 +12,7 @@
           <el-input v-model="siftName" placeholder="班级名称" clearable maxlength="30"></el-input>
         </el-col>
         <el-col :span="4" :offset="1">
-          <el-button type="primary" @click="getList(true)">查询</el-button>
+          <el-button type="primary" icon="el-icon-search" @click="getList(true)">查询</el-button>
         </el-col>
         </el-row>
       </div>

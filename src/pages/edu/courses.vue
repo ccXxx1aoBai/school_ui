@@ -200,11 +200,7 @@
       const year = curdate.getFullYear()
       this.siftTime = curdate.getMonth() < 6 ? `${(year - 1)}-${year}-2` : `${(year)}-${(year + 1)}-1`
       this.getList(false)
-      getYearList().then(res => {
-        if(res.data.code === 200) {
-          this.yearList = res.data.data
-        }
-      })
+      this.getYList()
     },
     methods: {
       selectSubject(row) {
@@ -227,6 +223,7 @@
               if(res.data.code === 200) {
                 this.$refs.form.resetFields()
                 this.getList(true)
+                this.getYList()
               }
             })
           }
@@ -239,6 +236,7 @@
           if(res.data.code === 200) {
             this.getList(true)
             this.cDialog = false
+            this.getYList()
           }
         })
       },
@@ -258,6 +256,13 @@
           }
         }).catch(() => {
           this.loading = false
+        })
+      },
+      getYList() {
+        getYearList().then(res => {
+          if(res.data.code === 200) {
+            this.yearList = res.data.data
+          }
         })
       },
       handleDel(row) {

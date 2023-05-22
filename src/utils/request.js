@@ -40,6 +40,7 @@ service.interceptors.response.use(
   },
   error => {
     const {status} = error.response
+    console.log(error);
     if(status === 400){
       sysNotification('参数错误')
     }else if(status === 401) {
@@ -53,7 +54,15 @@ service.interceptors.response.use(
         window.location.href = '/'
       })
     }else if(status === 403) {
-      sysNotification(Prompt.ACCESS_PERMISSIONS)
+      MessageBox(Prompt.ACCESS_PERMISSIONS, '系统提示', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'warning',
+      }).then(() => {
+        window.location.href = '/'
+      }).catch(() => {
+        window.location.href = '/'
+      })
     }else if(status === 404) {
       sysNotification(Prompt.RESOURCE_NO_EXIST)
     }else if(status === 500) {

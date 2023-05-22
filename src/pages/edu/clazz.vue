@@ -5,16 +5,15 @@
         <el-row>
           <el-col :span="3">
             <el-select v-model="siftDept" placeholder="所属学院" clearable>
-              <el-option v-for="item in deptList" :key="item.id" :value="item.id" :label="item.label"></el-option>
+              <el-option v-for="item in deptList" :key="item.id" :value="item.deptId" :label="item.label"></el-option>
             </el-select>
           </el-col>
           <el-col :span="3" :offset="1">
           <el-input v-model="siftName" placeholder="班级名称" clearable maxlength="30"></el-input>
         </el-col>
         <el-col :span="4" :offset="1">
-          <el-button type="primary" @click="getList(true)">查询</el-button>
-          <el-button type="primary" @click="dialog = !dialog">新增</el-button>
-          <el-button type="primary">导出</el-button>
+          <el-button type="primary" icon="el-icon-search" @click="getList(true)">查询</el-button>
+          <el-button type="primary" icon="el-icon-plus" @click="dialog = !dialog">新增</el-button>
         </el-col>
         </el-row>
       </div>
@@ -29,16 +28,12 @@
           <el-table-column prop="year" label="年级" align="center"></el-table-column>
           <el-table-column label="操作" align="center" width="180">
             <template slot-scope="scope">
-              <el-row>
-                <el-col :span="12">
+                <!-- <el-col :span="12">
                   <el-button type="text" icon="el-icon-edit" @click="handleEdit(scope.row)">编辑</el-button>
-                </el-col>
-                <el-col :span="12">
-                  <el-popconfirm title="是否删除此数据？" @confirm="handleDel(scope.row)">
-                    <el-button slot="reference" class="err" type="text" icon="el-icon-delete">删除</el-button>
-                  </el-popconfirm>
-                </el-col>
-              </el-row>
+                </el-col> -->
+                <el-popconfirm title="是否删除此数据？" @confirm="handleDel(scope.row)">
+                  <el-button slot="reference" class="err" type="text" icon="el-icon-delete">删除</el-button>
+                </el-popconfirm>
             </template>
           </el-table-column>
         </el-table>
@@ -60,7 +55,7 @@
           <el-row>
             <el-col :span="6">
               <el-select v-model="form.deptId" clearable placeholder="所属学院" @change="changeDept">
-                <el-option v-for="item in deptList" :key="item.id" :value="item.id + ''" :label="item.label"></el-option>
+                <el-option v-for="item in deptList" :key="item.id" :value="item.deptId" :label="item.label"></el-option>
               </el-select>
             </el-col>
           </el-row>
@@ -69,7 +64,7 @@
           <el-row>
             <el-col :span="6">
               <el-select v-model="form.majorId" clearable placeholder="专业名称" @change="changeMajor">
-                <el-option v-for="item in majorList" :key="item.id" :value="item.id + ''" :label="item.label"></el-option>
+                <el-option v-for="item in majorList" :key="item.id" :value="item.id" :label="item.label"></el-option>
               </el-select>
             </el-col>
           </el-row>
@@ -189,8 +184,8 @@
         const params = {
           current: this.current,
           size: this.size,
-          name: this.siftName,
-          dept: this.siftDept
+          siftName: this.siftName,
+          siftDept: this.siftDept
         }
         getClazzList(params).then(res => {
           this.loading = false
@@ -204,7 +199,7 @@
       changeDept(id) {
         this.majorList = []
         const obj = this.deptList.find(item => {
-          return item.id == id
+          return item.deptId == id
         })
         this.$set(this.form, 'dept', obj.label)
         this.$set(this.form, 'majorId', '')
@@ -223,10 +218,11 @@
         this.$set(this.form, 'teacherId', row.id)
       },
       handleEdit(row) {
+        console.log(row);
+        this.dialog = true
         this.$nextTick(() => {
-          this.dialog = true
           const obj = this.deptList.find(item => {
-            return item.id == row.deptId
+            return item.deptId == row.deptId
           })
           this.majorList = obj.children
           Object.keys(row).forEach(key => {

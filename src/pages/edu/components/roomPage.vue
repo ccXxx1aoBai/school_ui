@@ -6,7 +6,7 @@
           <el-input v-model="siftName" placeholder="教室名称" clearable maxlength="20"></el-input>
         </el-col>
         <el-col :span="5" :offset="1">
-          <el-button type="primary" @click="getRoomList(true)">查询</el-button>
+          <el-button type="primary" icon="el-icon-search" @click="getRoomList(true)">查询</el-button>
         </el-col>
       </el-row>
     </div>

@@ -11,15 +11,10 @@
               <el-option v-for="item in deptList" :key="item" :value="item"></el-option>
             </el-select>
           </el-col>
-          <el-col :span="3" :offset="1">
-            <el-select v-model="filterPos" placeholder="职位" clearable>
-              <el-option v-for="item in positionList" :key="item" :value="item"></el-option>
-            </el-select>
-          </el-col>
-          <el-col :span="3" :offset="1">
-            <el-button type="primary" @click="getList(true)">查询</el-button>
-            <el-button type="primary" @click="dialog = !dialog">新增</el-button>
-            <el-button type="primary" @click="handleExport">导出</el-button>
+          <el-col :span="4" :offset="1">
+            <el-button type="primary" icon="el-icon-search" @click="getList(true)">查询</el-button>
+            <el-button type="primary" icon="el-icon-plus" @click="dialog = !dialog">新增</el-button>
+            <el-button type="primary" icon="el-icon-printer" @click="handleExport">导出</el-button>
           </el-col>
         </el-row>
       </div>
@@ -27,12 +22,16 @@
       element-loading-background="rgba(0, 0, 0, 0.8)" element-loading-spinner="el-icon-loading">
         <el-table-column prop="id" label="职工编号" align="center"></el-table-column>
         <el-table-column prop="name" label="姓名" align="center"></el-table-column>
-        <el-table-column prop="sex" label="性别" align="center"></el-table-column>
+        <el-table-column prop="sex" label="性别" align="center">
+          <template slot-scope="scope">
+            {{ scope.row.sex == '1' ? '男' : scope.row.sex == '0' ? '女' : scope.row.sex }}
+          </template>
+        </el-table-column>
         <el-table-column prop="birth" label="生日" align="center"></el-table-column>
         <el-table-column prop="phone" label="手机号码" align="center"></el-table-column>
         <el-table-column prop="email" label="邮箱" align="center"></el-table-column>
         <el-table-column prop="dept" label="所属学院" align="center"></el-table-column>
-        <el-table-column prop="joinUs" label="入职时间" align="center"></el-table-column>
+        <el-table-column prop="time" label="入职时间" align="center"></el-table-column>
         <el-table-column label="操作" align="center">
           <div style="display: flex;" slot-scope="scope">
             <div style="width: 100%;">
@@ -77,8 +76,8 @@
         </el-form-item>
         <el-form-item prop="sex" label="性别：">
           <el-select v-model="teacherForm.sex" clearable>
-            <el-option :value="1" label="男"></el-option>
-            <el-option :value="0" label="女"></el-option>
+            <el-option value="1" label="男"></el-option>
+            <el-option value="0" label="女"></el-option>
           </el-select>
         </el-form-item>
         <el-form-item prop="birth" label="生日">
@@ -187,9 +186,12 @@
         this.$nextTick(() => {
           Object.keys(row).forEach(key => {
             if(this.teacherForm.hasOwnProperty(key)) {
-              this.$set(this.teacherForm, key, row[key])
+              this.$set(this.teacherForm, key, ('' + row[key]).indexOf('未填写') != -1 ? '' : row[key])
             }
           })
+          if(this.teacherForm.birth.indexOf('未填写') != -1) {
+            this.$set(this.teacherForm, 'birth', '')
+          }
         })
       },
       handleDel(row) {

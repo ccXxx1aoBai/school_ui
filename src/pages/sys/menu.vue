@@ -5,11 +5,7 @@
         <div class="tools">
           <el-row>
             <el-col :span="3">
-              <el-input placeholder="菜单名称" clearable v-model="siftName"></el-input>
-            </el-col>
-            <el-col :span="3" :offset="1">
-              <el-button type="primary" @click="getList(true)">查询</el-button>
-              <el-button type="primary" @click="dialog = !dialog">新增</el-button>
+              <el-button type="primary" icon="el-icon-plus" @click="dialog = !dialog">新增</el-button>
             </el-col>
           </el-row>
         </div>

@@ -8,7 +8,7 @@
               <el-input v-model="siftName" maxlength="30" clearable placeholder="自习室名称"></el-input>
             </el-col>
             <el-col :span="3" :offset="1">
-              <el-button type="primary" icon="el-icon-search">查询</el-button>
+              <el-button type="primary" icon="el-icon-search" @click="getList(true)">查询</el-button>
               <el-button type="primary" icon="el-icon-plus" @click="dialog = true">新增</el-button>
             </el-col>
           </el-row>
@@ -142,7 +142,7 @@ export default {
     }
   },
   created() {
-    this.getDataList(true)
+    this.getList(true)
   },
   methods: {
     handleSubmit() {
@@ -150,14 +150,16 @@ export default {
         if(valid) {
           addStudyRoom(this.form).then(res => {
             if(res.data.code === 200) {
+              this.$set(this.form, 'id', '')
               this.$refs.form.resetFields()
-              this.getDataList(true)
+              this.getList(true)
+              this.dialog = false
             }
           })
         }
       })
     },
-    getDataList(load) {
+    getList(load) {
       this.loading = load
       const params = {}
       params.size = this.size
@@ -185,7 +187,7 @@ export default {
     handleDel(row) {
       delStudyRoom(row.id).then(res => {
         if(res.data.code === 200) {
-          this.getDataList(true)
+          this.getList(true)
         }
       })
     }

@@ -8,8 +8,8 @@
               <el-input v-model="siftName" placeholder="教室名称" clearable maxlength="20"></el-input>
             </el-col>
             <el-col :span="5" :offset="1">
-              <el-button type="primary" @click="getRoomList(true)">查询</el-button>
-              <el-button type="primary" @click="dialog = true">新增</el-button>
+              <el-button type="primary" icon="el-icon-search" @click="getRoomList(true)">查询</el-button>
+              <el-button type="primary" icon="el-icon-plus" @click="dialog = true">新增</el-button>
             </el-col>
           </el-row>
         </div>
@@ -157,7 +157,6 @@
         this.$refs.roomForm.validate(valid => {
           if(valid) {
             this.roomForm.position = this.roomForm.position[0] + this.roomForm.position[1]
-            console.log(this.roomForm);
             if(this.roomForm.id) {
               this.roomForm.author = this.roomForm.eid
               updateRoom(this.roomForm).then(res => {
@@ -189,14 +188,15 @@
         })
       },
       handleEdit(row) {
+        this.dialog = true
         this.$nextTick(() => {
           Object.keys(row).forEach(key => {
             if(key == 'position') {
               this.$set(this.roomForm, 'position', [])
             }else if(key == 'author') {
               // this.$set(this.roomForm, 'author', {})
-              this.$set(this.roomForm.author, 'id', row[key])
-              this.$set(this.roomForm.author, 'name', row['ename'])
+              this.$set(this.roomForm, 'author', row[key])
+              // this.$set(this.roomForm.author, 'name', row['ename'])
             }else {
               this.$set(this.roomForm, key, row[key])
             }
@@ -204,7 +204,6 @@
           this.roomForm.position.push(row.position.substring(0, 1))
           this.roomForm.position.push(row.position.substring(1, 2))
           this.$set(this.roomForm, 'author', row.ename)
-          this.dialog = true
         })
       },
       beforeClose() {

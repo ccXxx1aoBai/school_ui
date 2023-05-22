@@ -7,9 +7,9 @@
             <el-col :span="4">
               <el-input v-model="siftName" clearable placeholder="角色名称" maxlength="20"></el-input>
             </el-col>
-            <el-col :span="2" :offset="1">
-              <el-button type="primary" @click="getList(true)">查询</el-button>
-              <el-button type="primary" @click="dialog = !dialog">新增</el-button>
+            <el-col :span="3" :offset="1">
+              <el-button type="primary" icon="el-icon-search" @click="getList(true)">查询</el-button>
+              <el-button type="primary" icon="el-icon-plus" @click="dialog = !dialog">新增</el-button>
             </el-col>
           </el-row>
         </div>
@@ -96,7 +96,7 @@
     },
     mixins: [mixin],
     created() {
-      this.getList(false)
+      this.getList(true)
     },
     methods: {
       getList(load) {

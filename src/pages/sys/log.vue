@@ -19,10 +19,9 @@
       </el-table>
       <el-pagination
       :total="total"
-      :current-page="current"
+      :current-page.sync="current"
       :page-size.sync="size"
       :page-sizes="[20, 50, 100, 300, 500]"
-      @current-change="handlePageChange"
       layout="total, sizes, prev, pager, next, jumper"></el-pagination>
     </div>
   </div>
@@ -59,14 +58,14 @@
           this.loading = false
         })
       },
-      handlePageChange(page) {
-        this.page = page
-      }
     }
   }
 </script>
 
 <style lang="scss" scoped>
+.el-pagination {
+  bottom: 50px;
+}
 ::v-deep .is-scrolling-none{
   &::-webkit-scrollbar{
     width: 10px;

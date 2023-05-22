@@ -11,7 +11,7 @@
           </el-select>
         </el-col>
         <el-col :span="8" :offset="1">
-          <el-button type="primary" @click="getList(true)">查询</el-button>
+          <el-button type="primary" icon="el-icon-search" @click="getList(true)">查询</el-button>
         </el-col>
       </el-row>
     </div>
